@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>班級模範生遴選</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F0E6; --paper-2:#EFE6D6; --card:#FFFDF8; --ink:#2B2622; --ink-2:#5E554D; --ink-3:#8C8178; --line:#D9CCB8;
+  --soft:#A61B22; --soft-2:#F6E3E0; --hard:#1F5E7A; --hard-2:#DDEBF0; --gold:#C9962B; --gold-2:#F7EBCF; --ok:#3D7A4A;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --r:14px; --shadow:0 1px 0 rgba(43,38,34,.04),0 6px 18px -10px rgba(43,38,34,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:820px;margin:0 auto;padding:18px 16px 120px}
+.wide{max-width:1180px}
+header.top{display:flex;align-items:center;gap:12px;margin:4px 0 18px}
+.seal{width:44px;height:44px;border-radius:10px;background:var(--soft);color:#fff;font-family:var(--serif);font-weight:900;font-size:24px;display:grid;place-items:center;flex:none;transform:rotate(-4deg)}
+header.top h1{font-family:var(--serif);font-size:22px;margin:0;line-height:1.25}
+header.top .sub{color:var(--ink-2);font-size:13px}
+.demo-tag{display:inline-block;background:var(--gold-2);color:#7a5a12;border:1px solid #e3cf9c;border-radius:99px;padding:0 10px;font-size:12px;margin-left:6px;vertical-align:middle}
+
+/* 首頁 */
+.hero{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px;box-shadow:var(--shadow)}
+.hero h2{font-family:var(--serif);font-size:26px;margin:0 0 6px}
+.hero p{margin:0;color:var(--ink-2)}
+.roles{display:grid;gap:12px;margin-top:18px}
+.role{display:flex;align-items:center;gap:16px;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);transition:transform .12s,border-color .12s}
+.role:hover{border-color:var(--ink-3);transform:translateY(-1px)}
+.role .ic{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:28px;flex:none}
+.role b{font-size:20px;display:block}
+.role span{color:var(--ink-2);font-size:14px}
+.role.self .ic{background:var(--soft-2)} .role.peer .ic{background:var(--hard-2)} .role.parent .ic{background:var(--gold-2)}
+.traits-intro{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.ti{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.ti h3{margin:0 0 6px;font-size:15px}
+.ti.soft h3{color:var(--soft)} .ti.hard h3{color:var(--hard)}
+.ti ol{margin:0;padding-left:20px;font-size:14px;color:var(--ink-2)}
+.weights-note{margin-top:14px;font-size:13px;color:var(--ink-3);text-align:center}
+
+/* 流程 */
+.bar{height:6px;background:var(--paper-2);border-radius:99px;overflow:hidden;margin:0 0 6px}
+.bar i{display:block;height:100%;background:var(--ink);border-radius:99px;transition:width .3s}
+.steptxt{font-size:13px;color:var(--ink-3);display:flex;justify-content:space-between;margin-bottom:14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 18px;box-shadow:var(--shadow)}
+.panel h2{font-family:var(--serif);font-size:22px;margin:0 0 4px}
+.panel .hint{color:var(--ink-2);margin:0 0 16px;font-size:15px}
+.chip-g{display:inline-block;border-radius:99px;padding:1px 10px;font-size:13px;font-weight:700;margin:0 0 6px}
+.chip-g.soft{background:var(--soft-2);color:var(--soft)} .chip-g.hard{background:var(--hard-2);color:var(--hard)}
+
+.seats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.seat{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:7px 2px;text-align:center;line-height:1.3;white-space:nowrap}
+.seat small{display:block;color:var(--ink-3);font-size:12px}
+.seat.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.seat.on small{color:#d8cfc4}
+.seat:disabled{opacity:.35;cursor:not-allowed}
+
+.rank-list{display:grid;gap:10px}
+.rk{position:relative;display:flex;gap:12px;align-items:flex-start;text-align:left;border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px}
+.rk .no{flex:none;width:52px;height:52px;border-radius:12px;border:2px dashed var(--line);display:grid;place-items:center;color:var(--ink-3);font-size:12px;line-height:1.1;text-align:center}
+.rk b{display:block;font-size:17px}
+.rk p{margin:2px 0 0;color:var(--ink-2);font-size:13px;line-height:1.55}
+.rk.on .no{border-style:solid;color:#fff;font-weight:700}
+.g-soft .rk.on{border-color:var(--soft)} .g-soft .rk.on .no{background:var(--soft);border-color:var(--soft)}
+.g-hard .rk.on{border-color:var(--hard)} .g-hard .rk.on .no{background:var(--hard);border-color:var(--hard)}
+.rk .no em{font-style:normal;font-size:20px;display:block}
+.tools{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--ink-3);font-size:13px}
+.link{background:none;border:0;color:var(--ink-2);text-decoration:underline;padding:4px}
+
+.rate-list{display:grid;gap:14px}
+.rt{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.rt b{font-size:17px}
+.rt p{margin:2px 0 10px;color:var(--ink-2);font-size:13px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.scale button{border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:6px 2px;line-height:1.2}
+.scale button em{font-style:normal;font-size:20px;font-weight:700;display:block}
+.scale button small{font-size:11px;color:var(--ink-3)}
+.g-soft .scale button.on{background:var(--soft);border-color:var(--soft);color:#fff}
+.g-hard .scale button.on{background:var(--hard);border-color:var(--hard);color:#fff}
+.scale button.on small{color:rgba(255,255,255,.85)}
+
+.pick-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pick-head .chip-g{margin:0}
+.pick-head + h2{margin:8px 0 10px}
+.counter{font-weight:700;font-size:15px;white-space:nowrap;border-radius:99px;padding:2px 12px;background:var(--paper-2)}
+.counter.full{background:var(--ok);color:#fff}
+.desc{background:var(--paper);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--ink-2);margin:0 0 14px}
+.names{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.nm{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 2px;line-height:1.25;text-align:center;white-space:nowrap;font-size:15px}
+.names.kid .nm{padding:12px 2px;font-size:16px}
+.nm small{display:block;color:var(--ink-3);font-size:11px}
+.nm.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.nm.on small{color:#d6eadb}
+.g-soft .nm.on{background:var(--soft);border-color:var(--soft)}
+.g-hard .nm.on{background:var(--hard);border-color:var(--hard)}
+
+.review h3{font-size:16px;margin:18px 0 8px;display:flex;justify-content:space-between;align-items:center}
+.review h3:first-of-type{margin-top:6px}
+.rv{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:14px;border-top:1px solid var(--paper-2);padding-top:6px}
+.rv span:nth-child(even){text-align:right;font-weight:700}
+
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(246,240,230,.94);backdrop-filter:blur(6px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+.nav .in{max-width:820px;margin:0 auto;display:flex;gap:10px}
+.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:700;font-size:16px;background:var(--ink);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.grow{flex:1}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.sm{padding:8px 14px;font-size:14px;border-radius:10px}
+.btn.gold{background:var(--gold)}
+.btn.red{background:var(--soft)}
+
+.done{text-align:center;padding:40px 20px}
+.done .big{font-size:64px}
+.done h2{font-family:var(--serif);font-size:28px;margin:8px 0}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-size:15px;opacity:0;transition:.25s;pointer-events:none;z-index:50;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* 後台 */
+.login{max-width:380px;margin:60px auto;text-align:center}
+.login input{width:100%;font:inherit;font-size:18px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;margin:14px 0;background:#fff;text-align:center}
+.admin-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
+.admin-bar .sp{flex:1}
+.admin-bar select{font:inherit;font-size:14px;padding:7px 10px;border-radius:10px;border:1.5px solid var(--line);background:#fff}
+.tabs{display:flex;gap:4px;border-bottom:1.5px solid var(--line);margin-bottom:16px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:none;border:0;padding:10px 14px;font-weight:700;color:var(--ink-3);border-bottom:3px solid transparent;margin-bottom:-1.5px;white-space:nowrap}
+.tab.on{color:var(--ink);border-color:var(--ink)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi small{color:var(--ink-3);font-size:13px}
+.kpi b{display:block;font-size:26px;font-family:var(--serif)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 4px;font-size:17px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card .note{color:var(--ink-3);font-size:13px;margin:0 0 10px}
+.chartbox{position:relative}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid2>*{min-width:0}
+.xscroll{overflow-x:auto}
+@media (max-width:1000px){.grid2{grid-template-columns:1fr}}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{padding:7px 8px;border-bottom:1px solid var(--paper-2);text-align:center;white-space:nowrap}
+table.t th{background:var(--paper);font-weight:700;position:sticky;top:0}
+table.t td.l,table.t th.l{text-align:left}
+.tscroll{overflow:auto;max-height:640px;border:1px solid var(--line);border-radius:10px}
+.medal{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;color:#fff;font-weight:700;font-size:13px}
+.m1{background:#C9962B}.m2{background:#9AA3AB}.m3{background:#B0703F}.mx{background:transparent;color:var(--ink-2)}
+.stars{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.star{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
+.star b{font-size:14px}
+.star.soft b{color:var(--soft)} .star.hard b{color:var(--hard)}
+.star ol{margin:4px 0 0;padding-left:20px;font-size:14px}
+.ok{color:var(--ok);font-weight:700}.no{color:#c9bfb3}
+.dup{color:var(--gold);font-size:11px;font-weight:700}
+.del{background:none;border:0;color:var(--soft);font-size:12px;text-decoration:underline}
+.formula{background:var(--paper);border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.8}
+.formula code{background:#fff;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-family:inherit}
+/* 家長確認視窗 */
+.child-one{display:flex;align-items:baseline;gap:10px;justify-content:center;background:var(--gold-2);border:1.5px solid #e3cf9c;border-radius:12px;padding:16px}
+.child-one b{font-size:26px;font-family:var(--serif)} .child-one small{color:var(--ink-2)}
+.modal{position:fixed;inset:0;background:rgba(43,38,34,.45);display:grid;place-items:center;z-index:60;padding:16px}
+.modal-box{background:var(--card);border-radius:16px;padding:22px 20px;width:100%;max-width:360px;text-align:center;box-shadow:0 20px 50px -20px rgba(0,0,0,.5)}
+.modal-box p{margin:0;color:var(--ink-3);font-size:14px}
+.modal-box h3{font-size:20px;margin:6px 0 18px;font-weight:500}
+.modal-box h3 b{font-family:var(--serif);font-size:26px;color:var(--soft)}
+.modal-btns{display:flex;gap:10px}.modal-btns .btn{flex:1;padding:12px 8px}
+
+/* 平板 */
+@media (min-width:600px){
+  .seats{grid-template-columns:repeat(7,1fr)}
+  .names{grid-template-columns:repeat(6,1fr)}
+  .names.kid{grid-template-columns:repeat(5,1fr)}
+  .roles{grid-template-columns:repeat(3,1fr)}
+  .role{flex-direction:column;text-align:center;gap:10px;padding:18px 12px}
+  .rate-list{grid-template-columns:1fr 1fr}
+}
+/* 手機 */
+@media (max-width:720px){
+  .grid2{grid-template-columns:1fr}
+  header.top h1{font-size:19px}
+  .tscroll table.t{font-size:13px}
+  table.t th,table.t td{padding:6px 5px}
+}
+@media (max-width:599px){
+  .wrap{padding:14px 12px 110px}
+  header.top{margin-bottom:12px} .seal{width:38px;height:38px;font-size:20px}
+  .hero{padding:16px} .hero h2{font-size:22px} .hero p{font-size:15px}
+  .role{padding:12px 14px;gap:12px} .role .ic{width:44px;height:44px;font-size:22px} .role b{font-size:17px}
+  .traits-intro{grid-template-columns:1fr 1fr;gap:8px} .ti{padding:10px 10px} .ti h3{font-size:14px} .ti ol{font-size:12.5px;padding-left:16px}
+  .panel{padding:16px 13px} .panel h2{font-size:20px} .panel .hint{font-size:14px;margin-bottom:12px}
+  .rk{padding:10px 11px;gap:10px} .rk .no{width:44px;height:44px} .rk .no em{font-size:17px} .rk b{font-size:16px} .rk p{font-size:12.5px}
+  .rt{padding:10px 11px} .rt b{font-size:16px} .rt p{font-size:12.5px}
+  .desc{font-size:13px;padding:9px 10px}
+  .nm{font-size:14.5px}
+  .kpis{gap:6px} .kpi{padding:7px 8px} .kpi small{font-size:11.5px} .kpi b{font-size:17px;white-space:nowrap}
+  .lg{display:none} .admin-bar select{font-size:13px;padding:6px 6px}
+  .card{padding:12px} .admin-bar{gap:6px} .admin-bar .sp{display:none}
+  .btn.sm{padding:7px 10px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <header class="top">
+    <div class="seal">模</div>
+    <div>
+      <h1 id="title">班級模範生遴選</h1>
+      <div class="sub" id="subtitle"></div>
+    </div>
+  </header>
+  <main id="app"></main>
+</div>
+<div class="nav" id="nav" hidden><div class="in" id="navIn"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+/* ===================== 基本設定 ===================== */
+var SUPABASE_URL = 'https://qdpklfsrgdtgbsutckib.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_e1XwlArxGr9KKwOtIsGDwQ_4I17iX4F';
+var CLASS_NAME = '六年09班';
+var YEAR_TITLE = '2026 模範生遴選';
+var ROLE_WEIGHT = { self: 0.15, parent: 0.10, peer: 0.75 };   // 自評15%、家長10%、他評75%
+var PICKS_PER_TRAIT = 3;
+
+// 學生名單（座號, 姓名）以 base64 存放，避免姓名被搜尋引擎或 GitHub 程式碼搜尋直接索引。
+// 換班時：在瀏覽器主控台執行 btoa(unescape(encodeURIComponent(JSON.stringify([[1,'姓名'],...])))) 產生新字串貼上。
+var STUDENTS = JSON.parse(decodeURIComponent(escape(atob('W1sxLCAi6JSh56au6Zm9Il0sIFsyLCAi5pu+5oGG6aeSIl0sIFszLCAi5p2O5rKF5Y+hIl0sIFs0LCAi5pyx54+l552/Il0sIFs1LCAi6KKB576p5bqtIl0sIFs3LCAi6JWt5a6H5L2RIl0sIFs4LCAi6JGJ5a6H5a64Il0sIFs5LCAi6Km55oOf5YKRIl0sIFsxMCwgIum7g+WTgeaWhyJdLCBbMTEsICLmtKrnv4rlmIkiXSwgWzEyLCAi6Zmz5byY5puEIl0sIFsxMywgIuael+iPr+aakCJdLCBbMTQsICLmnY7lh7Hmo64iXSwgWzE1LCAi5p2O6LuS5a6HIl0sIFsxNiwgIuiziOaWuee2uCJdLCBbMjEsICLmuLjmmbrosr0iXSwgWzIyLCAi5Zq05a2Q6Iy1Il0sIFsyMywgIumZs+afmuWQmyJdLCBbMjQsICLmsZ/pnZbnkr8iXSwgWzI1LCAi546L57Sr6IqDIl0sIFsyNiwgIuWQs+WGoOiQsSJdLCBbMjcsICLlvpDpn7XnlK8iXSwgWzI4LCAi6Kix5aqb56iAIl0sIFsyOSwgIuWKieWtkOathiJdLCBbMzAsICLnjovpg4HolrAiXSwgWzMxLCAi5Yuk6Kmg55CBIl0sIFszMiwgIuW8teeTiuS5iyJdLCBbMzMsICLmnY7mmbTokLEiXV0='))));
+var NAME = {}; STUDENTS.forEach(function(s){ NAME[s[0]] = s[1]; });
+
+var TRAITS = [
+  { id:'s1', g:'soft', name:'主動積極與成長思維', desc:'不害怕遇到難題或不會的課業，願意主動發問、多嘗試新事物，並且相信自己只要透過練習就能越來越進步。也能專注並配合指令，不需大人重複叮嚀告誡，避免佔用群體的學習時間與權益。' },
+  { id:'s2', g:'soft', name:'認真負責', desc:'做好學生與團隊成員的本分，不管是課堂作業或分組報告，答應的事都會細心做到最好，贏得老師和同學的信任。' },
+  { id:'s3', g:'soft', name:'抗壓與情緒管理', desc:'面對考試壓力、成績不理想或與同學發生摩擦時，懂得調適心情與自我放鬆，不隨意發脾氣，保持穩定的學習與生活狀態。' },
+  { id:'s4', g:'soft', name:'溝通表達', desc:'遇到問題或誤會時，懂得選擇面對面溝通把事情說清楚，而不是只用傳訊息、寫紙條或在背後議論；同時也學會認真傾聽對方的想法。' },
+  { id:'s5', g:'soft', name:'團隊合作', desc:'在班級活動或分組報告中，懂得關心與同理同學，與不同性格的人互相協調配合，一起達成團隊的目標。也能清楚定位自己的重要性並全力付出，拒絕聊天打鬧或搭便車享用現成成果。' },
+  { id:'h1', g:'hard', name:'數據整理與觀察', desc:'在日常生活中，養成將生活或學習資料進行數據整理（如：記錄每個月的零用錢開銷、繪製自我體重變化、讀書時間表...）的習慣，並能從圖表數據中發現規律與趨勢，督促自我成長。' },
+  { id:'h2', g:'hard', name:'AI與數位素養', desc:'將 AI 當作腦力激盪與創作的「協力夥伴」，而不是直接複製課業答案；明白 AI 給的資料需要經過自己思考與驗證，不把 AI 生成的成果直接當成自己的知識，並同時注意網路安全與個人隱私保護。' },
+  { id:'h3', g:'hard', name:'知識整理與自主學習', desc:'學會做自己的「上課筆記」或利用畫圖、心智圖整理重點，把各科零碎的知識變有系統，為國中龐大的課業量做準備。' },
+  { id:'h4', g:'hard', name:'時間與任務管理', desc:'學會自己規劃放學後的「時間分配表」，把寫作業、複習、玩樂與休息時間安排好，並按部就班在期限內完成工作。' },
+  { id:'h5', g:'hard', name:'禮貌應對與表達', desc:'在日常聯絡與文字書寫上，注意保持對師長與同學有禮貌的措辭與招呼，懂得在不同場合與情境下展現適當的文字與表達禮貌。' }
+];
+var T = {}; TRAITS.forEach(function(t){ T[t.id] = t; });
+var GROUP_NAME = { soft:'5大軟實力', hard:'5大硬技能' };
+var ROLE_NAME = { self:'自評', peer:'同學評', parent:'家長評' };
+var SCALE_LABEL = ['','還需努力','偶爾做到','有時做到','經常做到','總是做到'];
+
+var params = new URLSearchParams(location.search);
+var ROOM = params.get('room') || 'class609-2026';
+var IS_ADMIN = params.has('admin');
+var sb = null;
+if (!params.has('demo') && window.supabase && window.supabase.createClient) {
+  try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth:{ persistSession:false } }); } catch (e) { sb = null; }
+}
+var DEMO = !sb;
+
+/* ===================== 小工具 ===================== */
+function $(s, r){ return (r||document).querySelector(s); }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function pad(n){ return (n < 10 ? '0' : '') + n; }
+function stu(seat){ return pad(seat) + ' ' + (NAME[seat] || '?'); }
+function lsGet(k){ try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function lsDel(k){ try { localStorage.removeItem(k); } catch (e) {} }
+var toastTimer;
+function toast(msg){ var el = $('#toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2200); }
+function round(x, d){ var p = Math.pow(10, d == null ? 2 : d); return Math.round(x * p) / p; }
+function fmt(x, d){ return x == null || isNaN(x) ? '—' : round(x, d == null ? 2 : d).toFixed(d == null ? 2 : d); }
+function groupTraits(g){ return TRAITS.filter(function(t){ return t.g === g; }); }
+
+/* ===================== 資料存取（Supabase / 示範模式） ===================== */
+var DEMO_KEY = 'mvp_demo_' + ROOM;
+var api = {
+  submit: function(role, seat, payload){
+    if (DEMO) {
+      var rows = lsGet(DEMO_KEY) || [];
+      rows.push({ id: rows.length ? rows[rows.length-1].id + 1 : 1, role: role, seat: seat, payload: payload, created_at: new Date().toISOString() });
+      lsSet(DEMO_KEY, rows);
+      return Promise.resolve();
+    }
+    return sb.rpc('mvp_submit', { p_room: ROOM, p_role: role, p_seat: seat, p_payload: payload }).then(function(r){ if (r.error) throw r.error; });
+  },
+  load: function(pwd){
+    if (DEMO) { if (pwd !== 'demo') return Promise.reject(new Error('wrong password')); return Promise.resolve(lsGet(DEMO_KEY) || []); }
+    return sb.rpc('mvp_admin', { p_room: ROOM, p_pwd: pwd }).then(function(r){ if (r.error) throw r.error; return r.data || []; });
+  },
+  remove: function(pwd, id){
+    if (DEMO) { lsSet(DEMO_KEY, (lsGet(DEMO_KEY) || []).filter(function(r){ return r.id !== id; })); return Promise.resolve(); }
+    return sb.rpc('mvp_admin_delete', { p_room: ROOM, p_pwd: pwd, p_id: id }).then(function(r){ if (r.error) throw r.error; });
+  }
+};
+
+/* ===================== 填寫流程 ===================== */
+var S = null;   // 目前填寫狀態
+
+function buildSteps(role){
+  var st = role === 'parent' ? [{ k:'seat' }, { k:'rank', g:'soft' }, { k:'rank', g:'hard' }]
+                             : [{ k:'rank', g:'soft' }, { k:'rank', g:'hard' }, { k:'seat' }];
+  if (role === 'peer') TRAITS.forEach(function(t){ st.push({ k:'pick', t:t.id }); });
+  else st.push({ k:'rate', g:'soft' }, { k:'rate', g:'hard' });
+  st.push({ k:'review' });
+  return st;
+}
+// 家長版：這台裝置第一次送出後就綁定那位孩子，之後只能為同一位孩子評分
+var LOCK_KEY = 'mvp_parent_child_' + ROOM;
+function parentLock(){ var v = lsGet(LOCK_KEY); return NAME[v] ? v : null; }
+function draftKey(role){ return 'mvp_draft_' + ROOM + '_' + role; }
+function saveDraft(){ if (S) lsSet(draftKey(S.role), S); }
+
+function startRole(role){
+  var d = lsGet(draftKey(role));
+  if (d && d.role === role && d.v === 1) S = d;
+  else S = { v:1, role:role, step:0, seat:null, order:{ soft:[], hard:[] }, scores:{}, picks:{} };
+  S.steps = buildSteps(role);
+  if (S.step >= S.steps.length) S.step = 0;
+  if (role === 'parent' && parentLock()) S.seat = parentLock();
+  render();
+}
+
+function stepValid(){
+  var st = S.steps[S.step];
+  if (st.k === 'rank') return S.order[st.g].length === 5;
+  if (st.k === 'seat') return !!S.seat;
+  if (st.k === 'rate') return groupTraits(st.g).every(function(t){ return S.scores[t.id] >= 1; });
+  if (st.k === 'pick') return (S.picks[st.t] || []).length === PICKS_PER_TRAIT;
+  return true;
+}
+function stepMissingMsg(){
+  var st = S.steps[S.step];
+  if (st.k === 'rank') return '請把 5 項都依序點完喔';
+  if (st.k === 'seat') return S.role === 'parent' ? '請點選您孩子的姓名' : '請選擇你的座號';
+  if (st.k === 'rate') return '每一項都要選 1～5 分喔';
+  if (st.k === 'pick') return '請選滿 ' + PICKS_PER_TRAIT + ' 位同學';
+  return '';
+}
+
+function renderHome(){
+  $('#nav').hidden = true;
+  var soft = groupTraits('soft').map(function(t){ return '<li>' + t.name + '</li>'; }).join('');
+  var hard = groupTraits('hard').map(function(t){ return '<li>' + t.name + '</li>'; }).join('');
+  $('#app').innerHTML =
+    '<section class="hero"><h2>' + YEAR_TITLE + '</h2>' +
+    '<p>一起找出班上最能展現 <b style="color:var(--soft)">5大軟實力</b> 與 <b style="color:var(--hard)">5大硬技能</b> 的同學！請先選擇你的身分。</p></section>' +
+    '<div class="roles">' +
+      '<button class="role self" data-role="self"><div class="ic">🙋</div><div><b>我是學生・自評</b><span>排序 → 為自己打 1～5 分</span></div></button>' +
+      '<button class="role peer" data-role="peer"><div class="ic">🤝</div><div><b>我是學生・評同學</b><span>排序 → 每項選 3 位同學</span></div></button>' +
+      '<button class="role parent" data-role="parent"><div class="ic">👨‍👩‍👧</div><div><b>我是家長</b><span>選孩子 → 排序 → 為孩子打分</span></div></button>' +
+    '</div>' +
+    '<div class="traits-intro"><div class="ti soft"><h3>5大軟實力</h3><ol>' + soft + '</ol></div><div class="ti hard"><h3>5大硬技能</h3><ol>' + hard + '</ol></div></div>' +
+    '<p class="weights-note">同學評 75%・自評 15%・家長評 10%<br>再依全班認為的重要性加權</p>';
+}
+
+function render(){
+  window.scrollTo(0, 0);
+  if (!S) return renderHome();
+  var st = S.steps[S.step], n = S.steps.length, html = '';
+  var head = '<div class="bar"><i style="width:' + Math.round((S.step + 1) / n * 100) + '%"></i></div>' +
+             '<div class="steptxt"><span>' + ROLE_NAME[S.role] + '</span><span>第 ' + (S.step + 1) + ' / ' + n + ' 步</span></div>';
+  if (st.k === 'rank') html = viewRank(st.g);
+  else if (st.k === 'seat') html = viewSeat();
+  else if (st.k === 'rate') html = viewRate(st.g);
+  else if (st.k === 'pick') html = viewPick(st.t);
+  else html = viewReview();
+  $('#app').innerHTML = head + html;
+  var last = st.k === 'review';
+  $('#nav').hidden = false;
+  $('#navIn').innerHTML =
+    '<button class="btn ghost" data-act="back">' + (S.step === 0 ? '回首頁' : '上一步') + '</button>' +
+    '<button class="btn grow' + (last ? ' red' : '') + '" data-act="next"' + (stepValid() ? '' : ' aria-disabled="true" style="opacity:.45"') + '>' + (last ? '確認送出' : '下一步') + '</button>';
+}
+
+function viewRank(g){
+  var order = S.order[g];
+  var who = S.role === 'parent' ? '您' : '你';
+  var items = groupTraits(g).map(function(t){
+    var i = order.indexOf(t.id);
+    var no = i < 0 ? '點我<br>排序' : '<em>' + (i + 1) + '</em>' + (5 - i) + '分';
+    return '<button class="rk' + (i < 0 ? '' : ' on') + '" data-rank="' + t.id + '"><div class="no">' + no + '</div><div><b>' + t.name + '</b><p>' + t.desc + '</p></div></button>';
+  }).join('');
+  return '<section class="panel g-' + g + '"><span class="chip-g ' + g + '">' + GROUP_NAME[g] + '</span><h2>重要性排序</h2>' +
+    '<p class="hint">' + who + '覺得哪一項<b>最重要</b>？請依序點選：第 1 個點的最重要（5 分），最後一個最不重要（1 分）。</p>' +
+    '<div class="rank-list">' + items + '</div>' +
+    '<div class="tools"><span>已排 ' + order.length + ' / 5</span><button class="link" data-act="reset-rank" data-g="' + g + '">全部重排</button></div></section>';
+}
+
+function viewSeat(){
+  if (S.role === 'parent') return viewChild();
+  var q = S.role === 'parent' ? '請選擇<b>您孩子</b>的座號' : '請選擇<b>你自己</b>的座號';
+  var extra = S.role === 'peer' ? '（用來避免投到自己，也確認每人只算一份）' : '';
+  var btns = STUDENTS.map(function(s){
+    return '<button class="seat' + (S.seat === s[0] ? ' on' : '') + '" data-seat="' + s[0] + '">' + pad(s[0]) + '<small>' + s[1] + '</small></button>';
+  }).join('');
+  return '<section class="panel"><h2>選擇座號</h2><p class="hint">' + q + extra + '</p><div class="seats">' + btns + '</div></section>';
+}
+
+function viewChild(){
+  var lock = parentLock();
+  if (lock) return '<section class="panel"><h2>您孩子的姓名</h2><p class="hint">這台裝置已登記為 <b>' + esc(NAME[lock]) + '</b> 的家長，只能為這位孩子評分。</p>' +
+    '<div class="child-one"><b>' + esc(NAME[lock]) + '</b><small>' + pad(lock) + ' 號</small></div>' +
+    '<p class="hint" style="margin-top:14px;font-size:13px">若選錯孩子，請聯絡導師協助更正。</p></section>';
+  var btns = STUDENTS.map(function(s){
+    return '<button class="nm' + (S.seat === s[0] ? ' on' : '') + '" data-child="' + s[0] + '">' + s[1] + '</button>';
+  }).join('');
+  return '<section class="panel"><h2>請點選您孩子的姓名</h2><p class="hint">家長只能為<b>自己的孩子</b>評分；送出後，這台裝置就只能為這位孩子填寫。</p><div class="names kid">' + btns + '</div></section>';
+}
+function confirmChild(seat){
+  var ov = document.createElement('div'); ov.className = 'modal';
+  ov.innerHTML = '<div class="modal-box"><p>請確認</p><h3>您是 <b>' + esc(NAME[seat]) + '</b> 的家長嗎？</h3>' +
+    '<div class="modal-btns"><button class="btn ghost" data-m="no">重新選擇</button><button class="btn" data-m="yes">是，開始填寫</button></div></div>';
+  document.body.appendChild(ov);
+  ov.addEventListener('click', function(e){
+    var b = e.target.closest('[data-m]'); if (!b && e.target !== ov) return;
+    e.stopPropagation(); ov.remove();
+    if (b && b.dataset.m === 'yes') { S.seat = seat; S.step++; saveDraft(); render(); }
+  });
+}
+
+function viewRate(g){
+  var who = S.role === 'parent' ? '您的孩子 <b>' + esc(NAME[S.seat]) + '</b>' : '你自己';
+  var items = groupTraits(g).map(function(t){
+    var btns = '';
+    for (var v = 1; v <= 5; v++) btns += '<button class="' + (S.scores[t.id] === v ? 'on' : '') + '" data-score="' + t.id + ':' + v + '"><em>' + v + '</em><small>' + SCALE_LABEL[v] + '</small></button>';
+    return '<div class="rt"><b>' + t.name + '</b><p>' + t.desc + '</p><div class="scale">' + btns + '</div></div>';
+  }).join('');
+  return '<section class="panel g-' + g + '"><span class="chip-g ' + g + '">' + GROUP_NAME[g] + '</span><h2>' + (S.role === 'parent' ? '家長評分' : '自我評分') + '</h2>' +
+    '<p class="hint">請誠實想一想，' + who + '在每一項平常做到的程度：1 分還需努力，5 分總是做到。</p><div class="rate-list">' + items + '</div></section>';
+}
+
+function viewPick(tid){
+  var t = T[tid], picked = S.picks[tid] || [];
+  var idx = TRAITS.indexOf(t) + 1;
+  var btns = STUDENTS.filter(function(s){ return s[0] !== S.seat; }).map(function(s){
+    return '<button class="nm' + (picked.indexOf(s[0]) >= 0 ? ' on' : '') + '" data-pick="' + s[0] + '">' + s[1] + '<small>' + pad(s[0]) + '號</small></button>';
+  }).join('');
+  return '<section class="panel g-' + t.g + '"><div class="pick-head"><span class="chip-g ' + t.g + '">' + GROUP_NAME[t.g] + '・第 ' + idx + ' / 10 項</span>' +
+    '<span class="counter' + (picked.length === PICKS_PER_TRAIT ? ' full' : '') + '">已選 ' + picked.length + ' / ' + PICKS_PER_TRAIT + '</span></div><h2>' + t.name + '</h2>' +
+    '<p class="desc">' + t.desc + '</p>' +
+    '<p class="hint">哪 ' + PICKS_PER_TRAIT + ' 位同學最符合這一項？（不能選自己）</p><div class="names">' + btns + '</div></section>';
+}
+
+function viewReview(){
+  var who = S.role === 'parent' ? '孩子' : '我';
+  var h = '<section class="panel review"><h2>確認一下再送出</h2><p class="hint">' + who + '：<b>' + esc(stu(S.seat)) + '</b>' + (S.role === 'parent' && parentLock() ? '' : '　<button class="link" data-goto="seat">修改</button>') + '</p>';
+  ['soft','hard'].forEach(function(g){
+    h += '<h3><span><span class="chip-g ' + g + '">' + GROUP_NAME[g] + '</span>重要性排序</span><button class="link" data-goto="rank:' + g + '">修改</button></h3><div class="rv">' +
+      S.order[g].map(function(id, i){ return '<span>' + (i + 1) + '. ' + T[id].name + '</span><span>' + (5 - i) + ' 分</span>'; }).join('') + '</div>';
+  });
+  if (S.role === 'peer') {
+    h += '<h3><span>我選出的同學</span></h3><div class="rv">' + TRAITS.map(function(t){
+      return '<span>' + t.name + ' <button class="link" data-goto="pick:' + t.id + '">修改</button></span><span>' + (S.picks[t.id] || []).map(function(x){ return esc(NAME[x]); }).join('、') + '</span>';
+    }).join('') + '</div>';
+  } else {
+    ['soft','hard'].forEach(function(g){
+      h += '<h3><span><span class="chip-g ' + g + '">' + GROUP_NAME[g] + '</span>評分</span><button class="link" data-goto="rate:' + g + '">修改</button></h3><div class="rv">' +
+        groupTraits(g).map(function(t){ return '<span>' + t.name + '</span><span>' + S.scores[t.id] + ' 分</span>'; }).join('') + '</div>';
+    });
+  }
+  return h + '<p class="hint" style="margin-top:16px">送出後若發現填錯，可以再填一次，系統會以<b>最後一次</b>為準。</p></section>';
+}
+
+function gotoStep(key){
+  var p = key.split(':');
+  for (var i = 0; i < S.steps.length; i++) {
+    var st = S.steps[i];
+    if (st.k === p[0] && (!p[1] || st.g === p[1] || st.t === p[1])) { S.step = i; break; }
+  }
+  saveDraft(); render();
+}
+
+function submit(btn){
+  var rank = {};
+  ['soft','hard'].forEach(function(g){ S.order[g].forEach(function(id, i){ rank[id] = 5 - i; }); });
+  var payload = { v:1, rank:rank };
+  if (S.role === 'peer') {
+    payload.picks = {};
+    TRAITS.forEach(function(t){ payload.picks[t.id] = (S.picks[t.id] || []).filter(function(x){ return x !== S.seat; }); });
+  } else {
+    payload.scores = {};
+    TRAITS.forEach(function(t){ payload.scores[t.id] = S.scores[t.id]; });
+  }
+  btn.disabled = true; btn.textContent = '送出中…';
+  api.submit(S.role, S.seat, payload).then(function(){
+    var role = S.role, seat = S.seat;
+    lsDel(draftKey(role));
+    if (role === 'parent') lsSet(LOCK_KEY, seat);
+    // 自評與評同學共用排序：先帶入，下次不必重排
+    var other = role === 'self' ? 'peer' : role === 'peer' ? 'self' : null;
+    if (other && !lsGet(draftKey(other))) lsSet(draftKey(other), { v:1, role:other, step:2, seat:seat, order:S.order, scores:{}, picks:{} });
+    S = null;
+    $('#nav').hidden = true;
+    var nextTip = role === 'self' ? '<p>別忘了也要回首頁完成「評同學」喔！</p>' : role === 'peer' ? '<p>如果還沒自評，記得回首頁完成「自評」喔！</p>' : '<p>感謝您撥空參與孩子的成長紀錄。</p>';
+    $('#app').innerHTML = '<section class="panel done"><div class="big">🎉</div><h2>送出成功，謝謝' + (role === 'parent' ? '您' : '你') + '！</h2>' + nextTip +
+      '<button class="btn" data-act="home" style="margin-top:12px">回首頁</button></section>';
+  }).catch(function(e){
+    btn.disabled = false; btn.textContent = '確認送出';
+    toast('送出失敗，請檢查網路後再試一次');
+    console.error(e);
+  });
+}
+
+document.addEventListener('click', function(e){
+  var el = e.target.closest('button'); if (!el || IS_ADMIN) return;
+  var d = el.dataset;
+  if (d.role) return startRole(d.role);
+  if (d.act === 'home') { S = null; return render(); }
+  if (!S) return;
+  if (d.act === 'back') {
+    if (S.step === 0) { saveDraft(); S = null; } else { S.step--; saveDraft(); }
+    return render();
+  }
+  if (d.act === 'next') {
+    if (!stepValid()) { toast(stepMissingMsg()); el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); return; }
+    if (S.steps[S.step].k === 'review') return submit(el);
+    S.step++; saveDraft(); return render();
+  }
+  if (d.act === 'reset-rank') { S.order[d.g] = []; saveDraft(); return render(); }
+  if (d.goto) return gotoStep(d.goto);
+  if (d.child) return confirmChild(+d.child);
+  var y = window.scrollY;
+  if (d.rank) {
+    var g = T[d.rank].g, o = S.order[g], i = o.indexOf(d.rank);
+    if (i >= 0) o.splice(i, 1); else o.push(d.rank);
+  } else if (d.seat) {
+    S.seat = +d.seat;
+    Object.keys(S.picks).forEach(function(k){ S.picks[k] = S.picks[k].filter(function(x){ return x !== S.seat; }); });
+  } else if (d.score) {
+    var p = d.score.split(':'); S.scores[p[0]] = +p[1];
+  } else if (d.pick) {
+    var tid = S.steps[S.step].t, arr = S.picks[tid] = S.picks[tid] || [], s = +d.pick, j = arr.indexOf(s);
+    if (j >= 0) arr.splice(j, 1);
+    else if (arr.length >= PICKS_PER_TRAIT) { toast('每一項最多選 ' + PICKS_PER_TRAIT + ' 位，要換人請先取消一位'); return; }
+    else arr.push(s);
+  } else return;
+  saveDraft(); render(); window.scrollTo(0, y);
+});
+
+/* ===================== 後台運算 ===================== */
+var ADMIN_PWD = null, RAW = [], R = null, weightSource = 'all', charts = {};
+
+function compute(rows){
+  rows = rows.slice().sort(function(a, b){ return a.id - b.id; });
+  var latest = { self:{}, peer:{}, parent:{} }, count = { self:{}, peer:{}, parent:{} };
+  rows.forEach(function(r){
+    if (!latest[r.role] || !NAME[r.seat]) return;
+    latest[r.role][r.seat] = r;
+    count[r.role][r.seat] = (count[r.role][r.seat] || 0) + 1;
+  });
+
+  // 1. 重要性權重：學生（自評或評同學，同一座號取最後一次）＋家長
+  var stuRank = {};
+  ['self','peer'].forEach(function(role){ Object.keys(latest[role]).forEach(function(seat){
+    var r = latest[role][seat]; if (!stuRank[seat] || stuRank[seat].id < r.id) stuRank[seat] = r;
+  }); });
+  var rankRows = [];
+  if (weightSource !== 'parent') Object.keys(stuRank).forEach(function(k){ rankRows.push({ who:'student', r:stuRank[k] }); });
+  if (weightSource !== 'student') Object.keys(latest.parent).forEach(function(k){ rankRows.push({ who:'parent', r:latest.parent[k] }); });
+  var weight = {}, dist = {};
+  TRAITS.forEach(function(t){
+    var sum = 0, n = 0; dist[t.id] = [0,0,0,0,0,0];
+    rankRows.forEach(function(x){ var v = +((x.r.payload.rank || {})[t.id]); if (v >= 1 && v <= 5) { sum += v; n++; dist[t.id][v]++; } });
+    weight[t.id] = n ? sum / n : 3;
+  });
+
+  // 2. 他評票數
+  var votes = {}, maxVotes = {}, peerN = Object.keys(latest.peer).length;
+  TRAITS.forEach(function(t){ votes[t.id] = {}; STUDENTS.forEach(function(s){ votes[t.id][s[0]] = 0; }); });
+  Object.keys(latest.peer).forEach(function(seat){
+    var picks = latest.peer[seat].payload.picks || {};
+    TRAITS.forEach(function(t){
+      var seen = {};
+      (picks[t.id] || []).slice(0, PICKS_PER_TRAIT).forEach(function(x){
+        x = +x; if (x !== +seat && NAME[x] && !seen[x]) { seen[x] = 1; votes[t.id][x]++; }
+      });
+    });
+  });
+  TRAITS.forEach(function(t){ maxVotes[t.id] = Math.max.apply(null, STUDENTS.map(function(s){ return votes[t.id][s[0]]; })); });
+
+  // 3. 每位學生每一項
+  var people = STUDENTS.map(function(s){
+    var seat = s[0], p = { seat:seat, name:s[1], t:{}, soft:0, hard:0, total:0,
+      has:{ self:!!latest.self[seat], parent:!!latest.parent[seat], peer:!!latest.peer[seat] },
+      dup:{ self:count.self[seat] || 0, parent:count.parent[seat] || 0, peer:count.peer[seat] || 0 } };
+    TRAITS.forEach(function(t){
+      var self = latest.self[seat] ? +latest.self[seat].payload.scores[t.id] : null;
+      var par = latest.parent[seat] ? +latest.parent[seat].payload.scores[t.id] : null;
+      var v = votes[t.id][seat];
+      var peer = peerN ? (maxVotes[t.id] ? v / maxVotes[t.id] * 5 : 0) : null;
+      var parts = [[self, ROLE_WEIGHT.self], [par, ROLE_WEIGHT.parent], [peer, ROLE_WEIGHT.peer]], num = 0, den = 0;
+      parts.forEach(function(x){ if (x[0] != null && !isNaN(x[0])) { num += x[0] * x[1]; den += x[1]; } });
+      var comb = den ? num / den : null;
+      var w = comb == null ? 0 : comb * weight[t.id];
+      p.t[t.id] = { self:self, parent:par, votes:v, peer:peer, comb:comb, weighted:w };
+      p[t.g] += w;
+    });
+    p.total = p.soft + p.hard;
+    return p;
+  });
+  var maxPossible = TRAITS.reduce(function(a, t){ return a + 5 * weight[t.id]; }, 0);
+  people.forEach(function(p){ p.pct = p.total / maxPossible * 100; });
+  var ranked = people.slice().sort(function(a, b){ return b.total - a.total || a.seat - b.seat; });
+  ranked.forEach(function(p, i){ p.rank = i > 0 && Math.abs(p.total - ranked[i-1].total) < 1e-9 ? ranked[i-1].rank : i + 1; });
+
+  return { rows:rows, latest:latest, count:count, weight:weight, dist:dist, rankN:rankRows.length, votes:votes, maxVotes:maxVotes,
+           peerN:peerN, people:people, ranked:ranked, maxPossible:maxPossible,
+           n:{ self:Object.keys(latest.self).length, parent:Object.keys(latest.parent).length, peer:peerN } };
+}
+
+/* ===================== 圖表設定 ===================== */
+Chart.defaults.font.family = '"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
+Chart.defaults.color = '#5E554D';
+var bgPlugin = { id:'bg', beforeDraw:function(c){ var x = c.ctx; x.save(); x.globalCompositeOperation = 'destination-over'; x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, c.width, c.height); x.restore(); } };
+var C_SOFT = '#A61B22', C_HARD = '#1F5E7A', C_GOLD = '#C9962B';
+function titleOpt(text, sub){ return { title:{ display:true, text:text, font:{ size:18, weight:'bold' }, color:'#2B2622', padding:{ bottom: sub ? 2 : 12 } }, subtitle:{ display:!!sub, text:sub || '', color:'#8C8178', padding:{ bottom:12 } } }; }
+
+function cfgLeader(n){
+  var list = R.ranked.slice(0, n || R.ranked.length);
+  return { type:'bar', data:{ labels:list.map(function(p){ return p.rank + '. ' + p.name; }),
+      datasets:[{ label:'軟實力加權分', data:list.map(function(p){ return round(p.soft); }), backgroundColor:C_SOFT, borderRadius:3 },
+                { label:'硬技能加權分', data:list.map(function(p){ return round(p.hard); }), backgroundColor:C_HARD, borderRadius:3 }] },
+    options:{ indexAxis:'y', maintainAspectRatio:false, scales:{ x:{ stacked:true, title:{ display:true, text:'加權總分' } }, y:{ stacked:true, ticks:{ autoSkip:false } } },
+      plugins:Object.assign(titleOpt(CLASS_NAME + ' 模範生遴選 總排名', '自評15%・家長10%・同學評75%，再乘以各項重要性權重'), { legend:{ position:'bottom' } }) } };
+}
+function cfgWeight(){
+  var list = TRAITS.slice().sort(function(a, b){ return R.weight[b.id] - R.weight[a.id]; });
+  return { type:'bar', data:{ labels:list.map(function(t){ return t.name; }),
+      datasets:[{ label:'平均重要性（1～5）', data:list.map(function(t){ return round(R.weight[t.id]); }), backgroundColor:list.map(function(t){ return t.g === 'soft' ? C_SOFT : C_HARD; }), borderRadius:4 }] },
+    options:{ indexAxis:'y', maintainAspectRatio:false, scales:{ x:{ min:0, max:5 } },
+      plugins:Object.assign(titleOpt('大家心目中的重要性（加權倍數）', '共 ' + R.rankN + ' 份排序，最重要 5 分、最不重要 1 分；紅＝軟實力、藍＝硬技能'), { legend:{ display:false } }) } };
+}
+function avgOf(role){
+  return TRAITS.map(function(t){
+    var a = R.people.map(function(p){ return p.t[t.id][role]; }).filter(function(v){ return v != null && !isNaN(v); });
+    return a.length ? round(a.reduce(function(x, y){ return x + y; }, 0) / a.length) : null;
+  });
+}
+function cfgCompare(){
+  return { type:'bar', data:{ labels:TRAITS.map(function(t){ return t.name; }),
+      datasets:[{ label:'自評平均', data:avgOf('self'), backgroundColor:'#E7A79F' },
+                { label:'家長評平均', data:avgOf('parent'), backgroundColor:C_GOLD },
+                { label:'同學評平均（換算5分制）', data:avgOf('peer'), backgroundColor:'#5E554D' }] },
+    options:{ maintainAspectRatio:false, scales:{ y:{ min:0, max:5 }, x:{ ticks:{ autoSkip:false, maxRotation:40, minRotation:30 } } },
+      plugins:Object.assign(titleOpt('全班自評・家長評・同學評 比較', '看看大家對自己的看法和同學眼中的樣子有沒有落差'), { legend:{ position:'bottom' } }) } };
+}
+function cfgRadar(p, plain){
+  function d(role){ return TRAITS.map(function(t){ var v = p.t[t.id][role]; return v == null ? null : round(v); }); }
+  return { type:'radar', data:{ labels:TRAITS.map(function(t){ return t.name; }),
+      datasets:[{ label:'同學評', data:d('peer'), borderColor:'#2B2622', backgroundColor:'rgba(43,38,34,.12)', pointRadius:3 },
+                { label:'自評', data:d('self'), borderColor:C_SOFT, backgroundColor:'rgba(166,27,34,.08)', pointRadius:3 },
+                { label:'家長評', data:d('parent'), borderColor:C_GOLD, backgroundColor:'rgba(201,150,43,.08)', pointRadius:3 }] },
+    options:{ maintainAspectRatio:false, scales:{ r:{ min:0, max:5, ticks:{ stepSize:1, backdropColor:'transparent' }, pointLabels:{ font:{ size:12 }, color:function(c){ return TRAITS[c.index].g === 'soft' ? C_SOFT : C_HARD; } } } },
+      plugins:Object.assign(plain ? { title:{ display:false } } : titleOpt(pad(p.seat) + ' ' + p.name + '　第 ' + p.rank + ' 名', '總分 ' + fmt(p.total) + '（百分制 ' + fmt(p.pct, 1) + '）・軟 ' + fmt(p.soft) + '・硬 ' + fmt(p.hard)), { legend:{ position:'bottom' } }) } };
+}
+function cfgVotes(tid){
+  var t = T[tid], list = R.people.slice().sort(function(a, b){ return R.votes[tid][b.seat] - R.votes[tid][a.seat] || a.seat - b.seat; }).filter(function(p){ return R.votes[tid][p.seat] > 0; }).slice(0, 12);
+  return { type:'bar', data:{ labels:list.map(function(p){ return p.name; }), datasets:[{ label:'得票', data:list.map(function(p){ return R.votes[tid][p.seat]; }), backgroundColor:t.g === 'soft' ? C_SOFT : C_HARD, borderRadius:4 }] },
+    options:{ maintainAspectRatio:false, scales:{ y:{ beginAtZero:true, ticks:{ precision:0 } } }, plugins:Object.assign(titleOpt(t.name + '　同學票選', '共 ' + R.peerN + ' 位同學投票'), { legend:{ display:false } }) } };
+}
+
+function mountChart(id, cfg){
+  if (charts[id]) charts[id].destroy();
+  var cv = document.getElementById(id); if (!cv) return;
+  cfg.plugins = [bgPlugin];
+  charts[id] = new Chart(cv, cfg);
+}
+function chartImage(cfg, w, h, jpg){
+  var cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  cv.style.cssText = 'position:fixed;left:-9999px;top:0;width:' + w + 'px;height:' + h + 'px';
+  document.body.appendChild(cv);
+  cfg.options = Object.assign({}, cfg.options, { responsive:false, animation:false, devicePixelRatio:2 });
+  cfg.plugins = [bgPlugin];
+  var c = new Chart(cv, cfg), url = jpg ? c.toBase64Image('image/jpeg', 0.86) : c.toBase64Image('image/png');
+  c.destroy(); cv.remove();
+  return url;
+}
+function downloadURL(url, name){ var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+var CHART_EXPORTS = {
+  leader:  function(){ return [chartImage(cfgLeader(), 1100, Math.max(520, R.ranked.length * 30 + 160)), '總排名.png']; },
+  weight:  function(){ return [chartImage(cfgWeight(), 1000, 560), '重要性權重.png']; },
+  compare: function(){ return [chartImage(cfgCompare(), 1200, 620), '自評家長同學比較.png']; },
+  radar:   function(){ var p = R.people.filter(function(x){ return x.seat === radarSeat; })[0]; return [chartImage(cfgRadar(p), 900, 820), pad(p.seat) + p.name + '_雷達圖.png']; },
+  votes:   function(){ return [chartImage(cfgVotes(votesTrait), 1000, 520), T[votesTrait].name + '_票選.png']; },
+  poster:  function(){ return [drawPoster(), '模範生榮譽榜.png']; }
+};
+
+/* ===================== 全班雷達圖 PDF（每人一頁 A4） ===================== */
+function loadScript(src){
+  return new Promise(function(ok, fail){ var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = function(){ fail(new Error('元件載入失敗')); }; document.head.appendChild(s); });
+}
+function drawStudentPage(p){
+  var W = 1240, H = 1754, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  var x = cv.getContext('2d'), F = '"Noto Sans TC","Microsoft JhengHei",sans-serif', SF = '"Noto Serif TC","PMingLiU",serif';
+  x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#F6F0E6'; x.fillRect(0, 0, W, 230);
+  x.fillStyle = '#A61B22'; x.fillRect(0, 226, W, 4);
+  x.textAlign = 'left'; x.fillStyle = '#A61B22'; x.font = '700 28px ' + F; x.fillText(CLASS_NAME + '　' + YEAR_TITLE + '・個人特質雷達圖', 80, 82);
+  x.fillStyle = '#2B2622'; x.font = '900 72px ' + SF; x.fillText(p.name, 80, 178);
+  var nw = x.measureText(p.name).width;
+  x.fillStyle = '#8C8178'; x.font = '30px ' + F; x.fillText(pad(p.seat) + ' 號', 100 + nw, 176);
+  // 右上分數
+  x.textAlign = 'right'; x.fillStyle = '#5E554D'; x.font = '26px ' + F; x.fillText('總分（百分制）', W - 80, 88);
+  x.fillStyle = '#2B2622'; x.font = '900 64px ' + SF; x.fillText(fmt(p.pct, 1), W - 80, 160);
+  x.font = '24px ' + F; x.fillStyle = '#A61B22'; x.fillText('軟實力 ' + fmt(p.soft), W - 260, 200);
+  x.fillStyle = '#1F5E7A'; x.fillText('硬技能 ' + fmt(p.hard), W - 80, 200);
+  if (pdfShowRank) { x.fillStyle = '#C9962B'; x.font = '700 30px ' + F; x.fillText('全班第 ' + p.rank + ' 名', W - 330, 160); }
+  // 雷達圖
+  var rc = document.createElement('canvas'), rw = 1000, rh = 820; rc.width = rw; rc.height = rh;
+  rc.style.cssText = 'position:fixed;left:-9999px;top:0;width:' + rw + 'px;height:' + rh + 'px'; document.body.appendChild(rc);
+  var cfg = cfgRadar(p, true);
+  cfg.options = Object.assign({}, cfg.options, { responsive:false, animation:false, devicePixelRatio:1 });
+  cfg.options.scales.r.pointLabels.font = { size:20, weight:'bold' };
+  cfg.options.plugins.legend = { position:'bottom', labels:{ font:{ size:20 }, padding:24 } };
+  cfg.plugins = [bgPlugin];
+  var ch = new Chart(rc, cfg);
+  x.drawImage(rc, (W - rw) / 2, 260, rw, rh);
+  ch.destroy(); rc.remove();
+  // 表格
+  var cols = [['特質', 330], ['自評', 100], ['家長評', 110], ['同學票數', 130], ['同學換算', 130], ['綜合分', 110], ['權重', 100], ['加權分', 110]];
+  var tx = 60, ty = 1110, rh2 = 44;
+  x.fillStyle = '#2B2622'; x.fillRect(tx, ty, W - 120, rh2);
+  x.font = '700 22px ' + F; x.fillStyle = '#fff'; x.textAlign = 'center';
+  var cx = tx; cols.forEach(function(c){ x.fillText(c[0], cx + c[1] / 2, ty + 30); cx += c[1]; });
+  TRAITS.forEach(function(t, i){
+    var y = ty + rh2 * (i + 1), v = p.t[t.id];
+    x.fillStyle = t.g === 'soft' ? (i % 2 ? '#FBF1EF' : '#F6E3E0') : (i % 2 ? '#EEF5F8' : '#DDEBF0'); x.fillRect(tx, y, W - 120, rh2);
+    var vals = [t.name, v.self == null ? '—' : v.self, v.parent == null ? '—' : v.parent, v.votes, fmt(v.peer), fmt(v.comb), fmt(R.weight[t.id]), fmt(v.weighted)];
+    cx = tx;
+    vals.forEach(function(val, j){
+      x.textAlign = j ? 'center' : 'left'; x.font = (j === 7 ? '700 ' : '') + '22px ' + F;
+      x.fillStyle = j ? '#2B2622' : (t.g === 'soft' ? '#A61B22' : '#1F5E7A');
+      x.fillText(String(val), j ? cx + cols[j][1] / 2 : cx + 16, y + 30); cx += cols[j][1];
+    });
+  });
+  var yt = ty + rh2 * 11;
+  x.fillStyle = '#F6F0E6'; x.fillRect(tx, yt, W - 120, rh2);
+  x.fillStyle = '#2B2622'; x.font = '700 22px ' + F; x.textAlign = 'left'; x.fillText('合計（加權總分）', tx + 16, yt + 30);
+  x.textAlign = 'center'; x.fillText(fmt(p.total), W - 60 - 55, yt + 30);
+  // 說明
+  x.textAlign = 'left'; x.fillStyle = '#8C8178'; x.font = '20px ' + F;
+  x.fillText('綜合分＝自評×15%＋家長評×10%＋同學評×75%（同學換算＝得票÷該項最高票×5）；加權分＝綜合分×全班重要性權重。', 60, yt + 100);
+  x.fillText('填寫狀況：' + ['self','parent','peer'].map(function(r){ return ROLE_NAME[r] + (p.has[r] ? '✓' : '未填'); }).join('・') + '　｜　產出日期 ' + new Date().toLocaleDateString('zh-TW'), 60, yt + 134);
+  return cv.toDataURL('image/jpeg', 0.85);
+}
+var pdfShowRank = true;
+function exportRadarPDF(btn){
+  var old = btn.textContent; btn.disabled = true;
+  var order = R.people.slice();   // 依座號
+  var ready = window.jspdf ? Promise.resolve() : loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+  ready.then(function(){
+    var doc = new window.jspdf.jsPDF({ orientation:'portrait', unit:'mm', format:'a4', compress:true });
+    return new Promise(function(done){
+      var i = 0;
+      (function next(){
+        if (i >= order.length) return done(doc);
+        btn.textContent = '產生中 ' + (i + 1) + ' / ' + order.length;
+        if (i) doc.addPage();
+        doc.addImage(drawStudentPage(order[i]), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+        i++; setTimeout(next, 0);
+      })();
+    });
+  }).then(function(doc){
+    doc.save(CLASS_NAME + '_全班雷達圖_' + new Date().toISOString().slice(0, 10) + '.pdf');
+  }).catch(function(e){ console.error(e); toast('PDF 產生失敗：' + (e.message || e)); })
+    .then(function(){ btn.disabled = false; btn.textContent = old; });
+}
+
+/* ===================== 榮譽榜海報（canvas） ===================== */
+function drawPoster(jpg){
+  var W = 1080, H = 1500, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  var x = cv.getContext('2d'), F = '"Noto Sans TC","Microsoft JhengHei",sans-serif', SF = '"Noto Serif TC","PMingLiU",serif';
+  x.fillStyle = '#F6F0E6'; x.fillRect(0, 0, W, H);
+  x.strokeStyle = '#D9CCB8'; x.lineWidth = 3; x.strokeRect(36, 36, W - 72, H - 72);
+  x.strokeStyle = '#A61B22'; x.lineWidth = 1.5; x.strokeRect(50, 50, W - 100, H - 100);
+  x.textAlign = 'center'; x.fillStyle = '#A61B22'; x.font = '700 30px ' + F; x.fillText(CLASS_NAME, W / 2, 130);
+  x.fillStyle = '#2B2622'; x.font = '900 76px ' + SF; x.fillText(YEAR_TITLE.replace('遴選', '') + ' 榮譽榜', W / 2, 220);
+  x.fillStyle = '#8C8178'; x.font = '24px ' + F;
+  x.fillText('同學評 75%・自評 15%・家長評 10%　×　全班重要性權重', W / 2, 270);
+  var top = R.ranked;
+  // 頒獎台
+  var pos = [[W / 2, 1, 410, '#C9962B'], [W / 2 - 300, 2, 470, '#9AA3AB'], [W / 2 + 300, 3, 500, '#B0703F']];
+  pos.forEach(function(q){
+    var p = top[q[1] - 1]; if (!p) return;
+    var cx = q[0], cy = q[2], r = q[1] === 1 ? 105 : 85;
+    x.fillStyle = q[3]; x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#fff'; x.beginPath(); x.arc(cx, cy, r - 10, 0, Math.PI * 2); x.fill();
+    x.fillStyle = q[3]; x.font = '900 ' + (q[1] === 1 ? 64 : 52) + 'px ' + SF; x.fillText(String(p.rank), cx, cy + (q[1] === 1 ? 22 : 18));
+    x.fillStyle = '#2B2622'; x.font = '900 ' + (q[1] === 1 ? 52 : 42) + 'px ' + SF; x.fillText(p.name, cx, cy + r + 66);
+    x.fillStyle = '#5E554D'; x.font = '24px ' + F; x.fillText(pad(p.seat) + '號・' + fmt(p.total) + ' 分', cx, cy + r + 104);
+    // 軟硬比例條
+    var bw = 200, bx = cx - bw / 2, by = cy + r + 124, s = p.total ? p.soft / p.total : .5;
+    x.fillStyle = '#A61B22'; x.fillRect(bx, by, bw * s, 12); x.fillStyle = '#1F5E7A'; x.fillRect(bx + bw * s, by, bw * (1 - s), 12);
+  });
+  // 4–10 名
+  var y0 = 790, maxT = top[0] ? top[0].total || 1 : 1;
+  x.textAlign = 'left'; x.fillStyle = '#2B2622'; x.font = '700 30px ' + F; x.fillText('優秀表現', 110, y0);
+  x.fillStyle = '#A61B22'; x.fillRect(110, y0 + 14, 60, 4);
+  for (var i = 3; i < Math.min(10, top.length); i++) {
+    var p = top[i], y = y0 + 60 + (i - 3) * 62;
+    x.fillStyle = '#8C8178'; x.font = '700 28px ' + F; x.textAlign = 'right'; x.fillText(String(p.rank), 150, y + 10);
+    x.textAlign = 'left'; x.fillStyle = '#2B2622'; x.font = '700 30px ' + F; x.fillText(p.name, 175, y + 10);
+    x.fillStyle = '#8C8178'; x.font = '22px ' + F; x.fillText(pad(p.seat) + '號', 300, y + 10);
+    var bx2 = 380, bw2 = 470 * p.total / maxT;
+    x.fillStyle = '#A61B22'; x.fillRect(bx2, y - 10, bw2 * (p.total ? p.soft / p.total : 0), 22);
+    x.fillStyle = '#1F5E7A'; x.fillRect(bx2 + bw2 * (p.total ? p.soft / p.total : 0), y - 10, bw2 * (p.total ? p.hard / p.total : 0), 22);
+    x.fillStyle = '#2B2622'; x.font = '700 24px ' + F; x.fillText(fmt(p.total), bx2 + bw2 + 12, y + 9);
+  }
+  // 圖例
+  var ly = H - 150; x.textAlign = 'left'; x.font = '22px ' + F;
+  x.fillStyle = '#A61B22'; x.fillRect(W / 2 - 230, ly - 16, 22, 22); x.fillStyle = '#2B2622'; x.fillText('軟實力加權分', W / 2 - 198, ly + 2);
+  x.fillStyle = '#1F5E7A'; x.fillRect(W / 2 + 40, ly - 16, 22, 22); x.fillStyle = '#2B2622'; x.fillText('硬技能加權分', W / 2 + 72, ly + 2);
+  x.textAlign = 'center'; x.fillStyle = '#8C8178'; x.font = '20px ' + F;
+  x.fillText('自評 ' + R.n.self + ' 份・家長評 ' + R.n.parent + ' 份・同學評 ' + R.n.peer + ' 份　｜　' + new Date().toLocaleDateString('zh-TW'), W / 2, H - 92);
+  return jpg ? cv.toDataURL('image/jpeg', 0.9) : cv.toDataURL('image/png');
+}
+
+/* ===================== 後台畫面 ===================== */
+var tab = 'rank', radarSeat = STUDENTS[0][0], votesTrait = 's1';
+
+function adminLogin(msg){
+  $('#wrap').classList.remove('wide');
+  $('#app').innerHTML = '<section class="panel login"><h2>老師後台</h2><p class="hint">請輸入後台密碼' + (DEMO ? '（示範模式密碼：<b>demo</b>）' : '') + '</p>' +
+    '<input id="pwd" type="password" autocomplete="current-password" placeholder="密碼">' +
+    (msg ? '<p style="color:var(--soft)">' + msg + '</p>' : '') + '<button class="btn grow" id="loginBtn" style="width:100%">進入</button></section>';
+  $('#loginBtn').onclick = function(){ doLogin($('#pwd').value); };
+  $('#pwd').onkeydown = function(e){ if (e.key === 'Enter') doLogin(this.value); };
+  $('#pwd').focus();
+}
+function doLogin(pwd){
+  $('#app').innerHTML = '<p style="text-align:center;color:var(--ink-3);margin-top:60px">資料載入中…</p>';
+  api.load(pwd).then(function(rows){
+    ADMIN_PWD = pwd; try { sessionStorage.setItem('mvp_pwd_' + ROOM, pwd); } catch (e) {}
+    RAW = rows; R = compute(RAW);
+    return preloadFonts().then(renderAdmin);
+  }).catch(function(e){ console.error(e); adminLogin(/password/.test(e.message || '') ? '密碼不正確' : '連線失敗：' + esc(e.message || e)); });
+}
+// Google 字型依字元分批下載，canvas 畫圖不會自動觸發；先把會用到的字全部載好
+function preloadFonts(){
+  if (!document.fonts || !document.fonts.load) return Promise.resolve();
+  var text = CLASS_NAME + YEAR_TITLE + '榮譽榜優秀表現號分份軟實力硬技能加權總排名同學評自評家長評平均換算比較重要性權倍數票選共位投第名百分制紅藍＝・｜×（）0123456789.' +
+    STUDENTS.map(function(s){ return s[1]; }).join('') + TRAITS.map(function(t){ return t.name; }).join('') + '大家心目中的看法和眼樣子有沒落差最不排序乘以各項個人特質雷達圖總分合計填寫狀況產出日期得票÷該項最高未填綜合＋％—✓';
+  var specs = ['900 40px "Noto Serif TC"', '700 40px "Noto Serif TC"', '400 20px "Noto Sans TC"', '700 20px "Noto Sans TC"'];
+  var all = Promise.all(specs.map(function(f){ return document.fonts.load(f, text).catch(function(){}); }));
+  var timeout = new Promise(function(ok){ setTimeout(ok, 4000); });   // 網路慢時最多等 4 秒
+  return Promise.race([all, timeout]);
+}
+function reload(){ api.load(ADMIN_PWD).then(function(rows){ RAW = rows; R = compute(RAW); renderAdmin(); toast('已更新到最新資料'); }); }
+
+function renderAdmin(){
+  $('#wrap').classList.add('wide');
+  var total = STUDENTS.length;
+  var h = '<div class="admin-bar">' +
+    '<button class="btn sm" data-a="reload">↻ 重新整理</button>' +
+    '<button class="btn sm gold" data-a="excel">⬇ Excel<span class="lg">（含圖表）</span></button>' +
+    '<button class="btn sm ghost" data-a="png" data-k="poster">⬇ 榮譽榜</button>' +
+    '<button class="btn sm ghost" data-a="pdf">⬇ 雷達圖 PDF</button>' +
+    '<span class="sp"></span>' +
+    '<label style="font-size:14px;color:var(--ink-2)"><span class="lg">權重採計 </span><select id="wsrc"><option value="all">學生＋家長的排序</option><option value="student">只採學生</option><option value="parent">只採家長</option></select></label>' +
+    (DEMO ? '<button class="btn sm ghost" data-a="fake">產生示範資料</button><button class="btn sm ghost" data-a="clear">清空</button>' : '') +
+    '</div>' +
+    '<div class="kpis">' +
+      '<div class="kpi"><small>自評完成</small><b>' + R.n.self + ' / ' + total + '</b></div>' +
+      '<div class="kpi"><small>同學評完成</small><b>' + R.n.peer + ' / ' + total + '</b></div>' +
+      '<div class="kpi"><small>家長評完成</small><b>' + R.n.parent + ' / ' + total + '</b></div>' +
+      '<div class="kpi"><small>目前第一名</small><b>' + (R.rows.length ? esc(R.ranked[0].name) : '—') + '</b></div>' +
+    '</div>' +
+    '<div class="tabs">' + [['rank','總排名'],['person','個人分析'],['stars','各項之星'],['weight','重要性權重'],['progress','填寫進度'],['rule','計分方式']].map(function(x){
+      return '<button class="tab' + (tab === x[0] ? ' on' : '') + '" data-tab="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+    '<div id="tabBody"></div>';
+  $('#app').innerHTML = h;
+  $('#wsrc').value = weightSource;
+  $('#wsrc').onchange = function(){ weightSource = this.value; R = compute(RAW); renderAdmin(); };
+  renderTab();
+}
+
+function dlBtn(k){ return '<button class="btn sm ghost" data-a="png" data-k="' + k + '">⬇ 圖片</button>'; }
+function renderTab(){
+  var b = $('#tabBody'), h = '';
+  if (tab === 'rank') {
+    h = '<div class="card"><h3>總排名 ' + dlBtn('leader') + '</h3><div class="chartbox" style="height:' + Math.max(420, R.ranked.length * 26 + 120) + 'px"><canvas id="cLeader"></canvas></div></div>' +
+      '<div class="card"><h3>排名明細</h3><div class="tscroll"><table class="t"><thead><tr><th>名次</th><th>座號</th><th class="l">姓名</th><th>軟實力</th><th>硬技能</th><th>總分</th><th>百分制</th><th>自評</th><th>家長</th><th>同學評</th></tr></thead><tbody>' +
+      R.ranked.map(function(p){
+        var m = p.rank <= 3 ? 'm' + p.rank : 'mx';
+        return '<tr><td><span class="medal ' + m + '">' + p.rank + '</span></td><td>' + pad(p.seat) + '</td><td class="l"><b>' + esc(p.name) + '</b></td><td style="color:var(--soft)">' + fmt(p.soft) + '</td><td style="color:var(--hard)">' + fmt(p.hard) + '</td><td><b>' + fmt(p.total) + '</b></td><td>' + fmt(p.pct, 1) + '</td>' +
+          ['self','parent','peer'].map(function(r){ return '<td>' + (p.has[r] ? '<span class="ok">✓</span>' : '<span class="no">—</span>') + '</td>'; }).join('') + '</tr>';
+      }).join('') + '</tbody></table></div></div>';
+    b.innerHTML = h; mountChart('cLeader', cfgLeader());
+  } else if (tab === 'person') {
+    var p = R.people.filter(function(x){ return x.seat === radarSeat; })[0];
+    h = '<div class="card"><h3><span>個人分析　<select id="selSeat">' + STUDENTS.map(function(s){ return '<option value="' + s[0] + '"' + (s[0] === radarSeat ? ' selected' : '') + '>' + stu(s[0]) + '</option>'; }).join('') + '</select></span><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><label style="font-size:13px;font-weight:400;color:var(--ink-2);align-self:center"><input type="checkbox" id="pdfRank"' + (pdfShowRank ? ' checked' : '') + '> PDF 顯示名次</label>' + dlBtn('radar') + '<button class="btn sm" data-a="pdf">⬇ 全班 PDF</button></span></h3>' +
+      '<div class="grid2"><div class="chartbox" style="height:440px"><canvas id="cRadar"></canvas></div><div class="xscroll"><table class="t"><thead><tr><th class="l">特質</th><th>自評</th><th>家長</th><th>同學票</th><th>同學換算</th><th>綜合</th><th>權重</th><th>加權分</th></tr></thead><tbody>' +
+      TRAITS.map(function(t){ var v = p.t[t.id]; return '<tr><td class="l" style="color:' + (t.g === 'soft' ? 'var(--soft)' : 'var(--hard)') + '">' + t.name + '</td><td>' + (v.self == null ? '—' : v.self) + '</td><td>' + (v.parent == null ? '—' : v.parent) + '</td><td>' + v.votes + '</td><td>' + fmt(v.peer) + '</td><td>' + fmt(v.comb) + '</td><td>' + fmt(R.weight[t.id]) + '</td><td><b>' + fmt(v.weighted) + '</b></td></tr>'; }).join('') +
+      '<tr><td class="l"><b>合計</b></td><td colspan="6"></td><td><b>' + fmt(p.total) + '</b></td></tr></tbody></table>' +
+      '<p class="note" style="margin-top:8px">第 ' + p.rank + ' 名・百分制 ' + fmt(p.pct, 1) + '・' + ['self','parent','peer'].map(function(r){ return ROLE_NAME[r] + (p.has[r] ? '✓' : '未填'); }).join('・') + '</p></div></div></div>' +
+      '<div class="card"><h3>全班自評・家長評・同學評 比較 ' + dlBtn('compare') + '</h3><div class="chartbox" style="height:420px"><canvas id="cCompare"></canvas></div></div>';
+    b.innerHTML = h;
+    $('#selSeat').onchange = function(){ radarSeat = +this.value; renderTab(); };
+    $('#pdfRank').onchange = function(){ pdfShowRank = this.checked; };
+    mountChart('cRadar', cfgRadar(p)); mountChart('cCompare', cfgCompare());
+  } else if (tab === 'stars') {
+    h = '<div class="card"><h3>各項特質之星（依該項加權分）</h3><p class="note">括號內為同學票數</p><div class="stars">' + TRAITS.map(function(t){
+      var list = R.people.slice().sort(function(a, b){ return b.t[t.id].weighted - a.t[t.id].weighted || a.seat - b.seat; }).slice(0, 3);
+      return '<div class="star ' + t.g + '"><b>' + t.name + '</b><ol>' + list.map(function(p){ return '<li>' + esc(p.name) + ' <small style="color:var(--ink-3)">（' + p.t[t.id].votes + ' 票）</small></li>'; }).join('') + '</ol></div>';
+    }).join('') + '</div></div>' +
+      '<div class="card"><h3><span>同學票選　<select id="selTrait">' + TRAITS.map(function(t){ return '<option value="' + t.id + '"' + (t.id === votesTrait ? ' selected' : '') + '>' + t.name + '</option>'; }).join('') + '</select></span>' + dlBtn('votes') + '</h3><div class="chartbox" style="height:380px"><canvas id="cVotes"></canvas></div></div>';
+    b.innerHTML = h;
+    $('#selTrait').onchange = function(){ votesTrait = this.value; renderTab(); };
+    mountChart('cVotes', cfgVotes(votesTrait));
+  } else if (tab === 'weight') {
+    h = '<div class="card"><h3>重要性權重 ' + dlBtn('weight') + '</h3><div class="chartbox" style="height:420px"><canvas id="cWeight"></canvas></div></div>' +
+      '<div class="card"><h3>排序分布</h3><p class="note">每格為「給這一項打幾分」的人數</p><div class="tscroll"><table class="t"><thead><tr><th class="l">特質</th><th>5分<br>最重要</th><th>4分</th><th>3分</th><th>2分</th><th>1分<br>最不重要</th><th>平均（權重）</th></tr></thead><tbody>' +
+      TRAITS.map(function(t){ var d = R.dist[t.id]; return '<tr><td class="l" style="color:' + (t.g === 'soft' ? 'var(--soft)' : 'var(--hard)') + '">' + t.name + '</td><td>' + d[5] + '</td><td>' + d[4] + '</td><td>' + d[3] + '</td><td>' + d[2] + '</td><td>' + d[1] + '</td><td><b>' + fmt(R.weight[t.id]) + '</b></td></tr>'; }).join('') +
+      '</tbody></table></div></div>';
+    b.innerHTML = h; mountChart('cWeight', cfgWeight());
+  } else if (tab === 'progress') {
+    h = '<div class="card"><h3>填寫進度</h3><p class="note">黃色數字表示同一身分重複填寫的次數（以最後一次為準）。</p><div class="tscroll"><table class="t"><thead><tr><th>座號</th><th class="l">姓名</th><th>自評</th><th>同學評</th><th>家長評</th></tr></thead><tbody>' +
+      R.people.map(function(p){ return '<tr><td>' + pad(p.seat) + '</td><td class="l">' + esc(p.name) + '</td>' + ['self','peer','parent'].map(function(r){
+        return '<td>' + (p.has[r] ? '<span class="ok">✓</span>' + (p.dup[r] > 1 ? ' <span class="dup">×' + p.dup[r] + '</span>' : '') : '<span class="no">未填</span>') + '</td>'; }).join('') + '</tr>'; }).join('') +
+      '</tbody></table></div></div>' +
+      '<div class="card"><h3>所有填寫紀錄（' + R.rows.length + ' 筆）</h3><p class="note">測試或填錯的資料可以在這裡刪除，刪除後無法復原。</p><div class="tscroll" style="max-height:400px"><table class="t"><thead><tr><th>#</th><th>時間</th><th>身分</th><th class="l">座號</th><th></th></tr></thead><tbody>' +
+      R.rows.slice().reverse().map(function(r){ return '<tr><td>' + r.id + '</td><td>' + new Date(r.created_at).toLocaleString('zh-TW') + '</td><td>' + (ROLE_NAME[r.role] || r.role) + '</td><td class="l">' + esc(stu(r.seat)) + '</td><td><button class="del" data-a="del" data-id="' + r.id + '">刪除</button></td></tr>'; }).join('') +
+      '</tbody></table></div></div>';
+    b.innerHTML = h;
+  } else {
+    var link = location.origin + location.pathname + (ROOM !== 'class609-2026' ? '?room=' + encodeURIComponent(ROOM) : '');
+    h = '<div class="card"><h3>計分方式</h3><div class="formula">' +
+      '<p><b>① 重要性權重</b>：每份排序中，最重要的一項得 5 分、最不重要得 1 分。全班（學生每人一份＋家長每人一份）平均後，就是該特質的<b>權重</b>（1～5）。</p>' +
+      '<p><b>② 同學評換算</b>：每位同學在每一項選 3 人。某人在該項的得票 ÷ 該項全班最高票 × 5，換成 0～5 分（最高票者 = 5 分）。</p>' +
+      '<p><b>③ 綜合分</b>：<code>自評 × 15% ＋ 家長評 × 10% ＋ 同學評 × 75%</code>。若家長或自評未填，就用已填的部分按比例計算（例如沒有家長評，則為 自評×15/90 ＋ 同學評×75/90）。</p>' +
+      '<p><b>④ 加權分</b>：<code>綜合分 × 權重</code>；10 項加總為<b>總分</b>，軟實力 5 項為軟實力分、硬技能 5 項為硬技能分。</p>' +
+      '<p><b>⑤ 百分制</b>：總分 ÷（5 × 10 項權重總和）× 100，方便閱讀。</p></div></div>' +
+      '<div class="card"><h3>填寫網址</h3><p class="note">把這個網址（或做成 QR code）給學生與家長：</p><div class="formula" style="word-break:break-all"><b>' + esc(link) + '</b></div>' +
+      '<p class="note" style="margin-top:8px">目前班級代碼（room）：' + esc(ROOM) + (DEMO ? '　｜　<b>示範模式：資料只存在這台電腦的瀏覽器</b>' : '') + '</p></div>';
+    b.innerHTML = h;
+  }
+}
+
+document.addEventListener('click', function(e){
+  if (!IS_ADMIN) return;
+  var el = e.target.closest('button'); if (!el) return;
+  var d = el.dataset;
+  if (d.tab) { tab = d.tab; Object.keys(charts).forEach(function(k){ charts[k].destroy(); }); charts = {}; return renderAdmin(); }
+  if (d.a === 'reload') return reload();
+  if (d.a === 'png') { if (!R.rows.length) return toast('目前還沒有資料'); var r = CHART_EXPORTS[d.k](); return downloadURL(r[0], r[1]); }
+  if (d.a === 'pdf') { if (!R.rows.length) return toast('目前還沒有資料'); return exportRadarPDF(el); }
+  if (d.a === 'excel') { if (!R.rows.length) return toast('目前還沒有資料'); return exportExcel(el); }
+  if (d.a === 'fake') { makeFakeData(); return reload(); }
+  if (d.a === 'clear') { if (confirm('清空這台電腦上的示範資料？')) { lsDel(DEMO_KEY); reload(); } return; }
+  if (d.a === 'del') {
+    var id = +d.id, row = RAW.filter(function(r){ return r.id === id; })[0];
+    if (!row || !confirm('確定刪除第 ' + id + ' 筆（' + ROLE_NAME[row.role] + '・' + stu(row.seat) + '）？刪除後無法復原。')) return;
+    api.remove(ADMIN_PWD, id).then(reload).catch(function(err){ toast('刪除失敗：' + (err.message || err)); });
+  }
+});
+
+/* ===================== Excel 匯出（ExcelJS） ===================== */
+function loadExcelJS(){
+  if (window.ExcelJS) return Promise.resolve();
+  return new Promise(function(ok, fail){
+    var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';
+    s.onload = ok; s.onerror = function(){ fail(new Error('Excel 元件載入失敗')); }; document.head.appendChild(s);
+  });
+}
+function exportExcel(btn){
+  var old = btn.textContent; btn.disabled = true; btn.textContent = '產生中…';
+  loadExcelJS().then(function(){ return buildWorkbook(); }).then(function(buf){
+    var blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    var url = URL.createObjectURL(blob);
+    downloadURL(url, CLASS_NAME + '_模範生遴選_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  }).catch(function(e){ console.error(e); toast('Excel 產生失敗：' + (e.message || e)); })
+    .then(function(){ btn.disabled = false; btn.textContent = old; });
+}
+
+function buildWorkbook(){
+  var wb = new ExcelJS.Workbook(); wb.creator = CLASS_NAME; wb.created = new Date();
+  var FONT = '微軟正黑體';
+  var HEAD = { type:'pattern', pattern:'solid', fgColor:{ argb:'FF2B2622' } };
+  var SOFTF = { type:'pattern', pattern:'solid', fgColor:{ argb:'FFF6E3E0' } }, HARDF = { type:'pattern', pattern:'solid', fgColor:{ argb:'FFDDEBF0' } };
+  var MEDAL = ['FFF7E1A6', 'FFE3E7EA', 'FFF1D3BD'];
+  var thin = { style:'thin', color:{ argb:'FFD9CCB8' } }, BORDER = { top:thin, left:thin, bottom:thin, right:thin };
+
+  function sheet(name, title, sub, headers, widths){
+    var ws = wb.addWorksheet(name, { views:[{ state:'frozen', ySplit:3 }] });
+    ws.mergeCells(1, 1, 1, Math.max(headers.length, 4));
+    var c = ws.getCell(1, 1); c.value = title; c.font = { name:FONT, size:16, bold:true, color:{ argb:'FFA61B22' } };
+    ws.getRow(1).height = 28;
+    ws.mergeCells(2, 1, 2, Math.max(headers.length, 4));
+    c = ws.getCell(2, 1); c.value = sub || ''; c.font = { name:FONT, size:10, color:{ argb:'FF8C8178' } };
+    var hr = ws.getRow(3); hr.values = headers; hr.height = 30;
+    hr.eachCell(function(cell){ cell.font = { name:FONT, bold:true, color:{ argb:'FFFFFFFF' } }; cell.fill = HEAD; cell.alignment = { vertical:'middle', horizontal:'center', wrapText:true }; cell.border = BORDER; });
+    (widths || []).forEach(function(w, i){ ws.getColumn(i + 1).width = w; });
+    return ws;
+  }
+  function addRow(ws, vals, opt){
+    var r = ws.addRow(vals);
+    r.eachCell({ includeEmpty:true }, function(cell, col){
+      cell.font = { name:FONT, bold:!!(opt && opt.bold) }; cell.border = BORDER;
+      cell.alignment = { vertical:'middle', horizontal:(opt && opt.left && opt.left.indexOf(col) >= 0) ? 'left' : 'center', wrapText:!!(opt && opt.wrap) };
+      if (typeof cell.value === 'number' && !Number.isInteger(cell.value)) cell.numFmt = '0.00';
+      if (opt && opt.fill) cell.fill = opt.fill;
+    });
+    return r;
+  }
+  function scale(ws, ref, color){ ws.addConditionalFormatting({ ref:ref, rules:[{ type:'colorScale', priority:1, cfvo:[{ type:'min' }, { type:'max' }], color:[{ argb:'FFFFFFFF' }, { argb:color }] }] }); }
+  function img(ws, dataUrl, col, row, w, h){ var id = wb.addImage({ base64:dataUrl, extension:/^data:image\/jpeg/.test(dataUrl) ? 'jpeg' : 'png' }); ws.addImage(id, { tl:{ col:col, row:row }, ext:{ width:w, height:h } }); }
+  function num(v, d){ return v == null || isNaN(v) ? '' : round(v, d == null ? 2 : d); }
+  var stamp = '產出時間：' + new Date().toLocaleString('zh-TW') + '　｜　自評 ' + R.n.self + ' 份・家長評 ' + R.n.parent + ' 份・同學評 ' + R.n.peer + ' 份';
+  var last = 3 + R.ranked.length;
+
+  // 1. 總排名
+  var ws = sheet('總排名', CLASS_NAME + ' ' + YEAR_TITLE + '　總排名', stamp, ['名次','座號','姓名','軟實力加權分','硬技能加權分','總分','百分制','自評','家長評','同學評'], [7,7,11,13,13,11,10,7,8,8]);
+  R.ranked.forEach(function(p){
+    var r = addRow(ws, [p.rank, p.seat, p.name, num(p.soft), num(p.hard), num(p.total), num(p.pct, 1), p.has.self ? '✓' : '', p.has.parent ? '✓' : '', p.has.peer ? '✓' : ''], { bold:p.rank <= 3, fill:p.rank <= 3 ? { type:'pattern', pattern:'solid', fgColor:{ argb:MEDAL[p.rank - 1] } } : null });
+    r.getCell(7).numFmt = '0.0';
+  });
+  scale(ws, 'F4:F' + last, 'FFF4B183');
+  img(ws, chartImage(cfgLeader(), 1000, Math.max(520, R.ranked.length * 28 + 160), true), 11, 2, 620, Math.max(320, R.ranked.length * 17 + 100));
+
+  // 2. 榮譽榜（海報圖）
+  ws = wb.addWorksheet('榮譽榜');
+  img(ws, drawPoster(true), 0, 0, 540, 750);
+
+  // 3. 各項加權分
+  ws = sheet('各項加權分', '每位學生 10 項特質的加權分', '加權分 ＝（自評×15% ＋ 家長評×10% ＋ 同學評×75%）× 該項重要性權重', ['座號','姓名'].concat(TRAITS.map(function(t){ return t.name; })).concat(['軟實力','硬技能','總分','名次']), [7,11].concat(TRAITS.map(function(){ return 12; })).concat([10,10,10,7]));
+  R.people.forEach(function(p){ addRow(ws, [p.seat, p.name].concat(TRAITS.map(function(t){ return num(p.t[t.id].weighted); })).concat([num(p.soft), num(p.hard), num(p.total), p.rank])); });
+  TRAITS.forEach(function(t, i){ ws.getRow(3).getCell(3 + i).fill = t.g === 'soft' ? { type:'pattern', pattern:'solid', fgColor:{ argb:'FFA61B22' } } : { type:'pattern', pattern:'solid', fgColor:{ argb:'FF1F5E7A' } }; });
+  ['C','D','E','F','G'].forEach(function(c){ scale(ws, c + '4:' + c + last, 'FFE7A79F'); });
+  ['H','I','J','K','L'].forEach(function(c){ scale(ws, c + '4:' + c + last, 'FF9CC3D5'); });
+  scale(ws, 'O4:O' + last, 'FFF4B183');
+
+  // 4. 分項明細
+  ws = sheet('分項明細', '每位學生每一項的原始分與換算過程', '同學換算 ＝ 得票 ÷ 該項最高票 × 5；綜合 ＝ 已填部分依 15/10/75 比例加權平均', ['座號','姓名','類別','特質','自評','家長評','同學得票','同學換算','綜合分','權重','加權分'], [7,11,10,20,7,8,9,9,9,8,9]);
+  R.people.forEach(function(p){ TRAITS.forEach(function(t){
+    var v = p.t[t.id];
+    addRow(ws, [p.seat, p.name, GROUP_NAME[t.g].slice(2), t.name, v.self == null ? '' : v.self, v.parent == null ? '' : v.parent, v.votes, num(v.peer), num(v.comb), num(R.weight[t.id]), num(v.weighted)], { left:[4], fill:t.g === 'soft' ? SOFTF : HARDF });
+  }); });
+  ws.autoFilter = { from:'A3', to:'K3' };
+
+  // 5. 各項之星
+  ws = sheet('各項之星', '各項特質前三名', '依該項加權分排序，括號為同學票數', ['類別','特質','第1名','第2名','第3名','最高票數'], [10,22,18,18,18,10]);
+  TRAITS.forEach(function(t){
+    var list = R.people.slice().sort(function(a, b){ return b.t[t.id].weighted - a.t[t.id].weighted || a.seat - b.seat; }).slice(0, 3);
+    addRow(ws, [GROUP_NAME[t.g].slice(2), t.name].concat(list.map(function(p){ return p.name + '（' + p.t[t.id].votes + '票）'; })).concat([R.maxVotes[t.id]]), { left:[2], fill:t.g === 'soft' ? SOFTF : HARDF });
+  });
+
+  // 6. 同學票數
+  ws = sheet('同學票數', '每一項的同學得票數', '共 ' + R.peerN + ' 位同學投票，每項每人選 ' + PICKS_PER_TRAIT + ' 位', ['座號','姓名'].concat(TRAITS.map(function(t){ return t.name; })).concat(['總票數']), [7,11].concat(TRAITS.map(function(){ return 12; })).concat([9]));
+  R.people.forEach(function(p){ var tot = 0; var vals = TRAITS.map(function(t){ tot += R.votes[t.id][p.seat]; return R.votes[t.id][p.seat]; }); addRow(ws, [p.seat, p.name].concat(vals).concat([tot])); });
+  scale(ws, 'C4:L' + last, 'FFF4B183');
+
+  // 7. 重要性權重
+  ws = sheet('重要性權重', '大家心目中各項特質的重要性', '共 ' + R.rankN + ' 份排序；最重要 5 分、最不重要 1 分，平均即為權重', ['類別','特質','5分(最重要)','4分','3分','2分','1分(最不重要)','平均＝權重'], [10,22,12,8,8,8,13,12]);
+  TRAITS.forEach(function(t){ var d = R.dist[t.id]; addRow(ws, [GROUP_NAME[t.g].slice(2), t.name, d[5], d[4], d[3], d[2], d[1], num(R.weight[t.id])], { left:[2], fill:t.g === 'soft' ? SOFTF : HARDF }); });
+  img(ws, chartImage(cfgWeight(), 1000, 560, true), 0, 15, 640, 360);
+
+  // 8. 圖表
+  ws = wb.addWorksheet('圖表');
+  img(ws, chartImage(cfgCompare(), 1200, 620, true), 0, 0, 760, 393);
+  TRAITS.forEach(function(t, i){ img(ws, chartImage(cfgVotes(t.id), 1000, 520, true), (i % 2) * 8, 21 + Math.floor(i / 2) * 18, 520, 270); });
+
+  // 9. 個人雷達圖
+  ws = wb.addWorksheet('個人雷達圖');
+  R.ranked.forEach(function(p, i){ img(ws, chartImage(cfgRadar(p), 720, 660, true), (i % 3) * 7, Math.floor(i / 3) * 20, 400, 364); });
+
+  // 10. 填寫進度
+  ws = sheet('填寫進度', '填寫進度', '數字為重複填寫次數（以最後一次為準）', ['座號','姓名','自評','同學評','家長評'], [7,11,9,9,9]);
+  R.people.forEach(function(p){ addRow(ws, [p.seat, p.name].concat(['self','peer','parent'].map(function(r){ return p.has[r] ? (p.dup[r] > 1 ? '✓（' + p.dup[r] + '次）' : '✓') : '未填'; }))); });
+
+  // 11. 原始資料
+  ws = sheet('原始-自評家長', '自評與家長評原始資料（每人最後一次）', '', ['身分','座號','姓名','填寫時間'].concat(TRAITS.map(function(t){ return t.name; })), [8,7,11,20].concat(TRAITS.map(function(){ return 11; })));
+  ['self','parent'].forEach(function(role){ R.people.forEach(function(p){ var r = R.latest[role][p.seat]; if (!r) return;
+    addRow(ws, [ROLE_NAME[role], p.seat, p.name, new Date(r.created_at).toLocaleString('zh-TW')].concat(TRAITS.map(function(t){ return +r.payload.scores[t.id]; }))); }); });
+  ws = sheet('原始-同學評', '同學評原始資料（每人最後一次）', '', ['投票者座號','投票者','填寫時間'].concat(TRAITS.map(function(t){ return t.name; })), [10,11,20].concat(TRAITS.map(function(){ return 22; })));
+  R.people.forEach(function(p){ var r = R.latest.peer[p.seat]; if (!r) return;
+    addRow(ws, [p.seat, p.name, new Date(r.created_at).toLocaleString('zh-TW')].concat(TRAITS.map(function(t){ return ((r.payload.picks || {})[t.id] || []).map(function(x){ return NAME[x] || x; }).join('、'); })), { wrap:true }); });
+  ws = sheet('原始-重要性排序', '每份重要性排序（5＝最重要）', '學生的自評與評同學若都有排序，以最後一次為準', ['身分','座號','姓名'].concat(TRAITS.map(function(t){ return t.name; })), [8,7,11].concat(TRAITS.map(function(){ return 11; })));
+  ['self','peer','parent'].forEach(function(role){ R.people.forEach(function(p){ var r = R.latest[role][p.seat]; if (!r) return;
+    addRow(ws, [ROLE_NAME[role], p.seat, p.name].concat(TRAITS.map(function(t){ return +r.payload.rank[t.id] || ''; }))); }); });
+
+  // 12. 計分說明
+  ws = wb.addWorksheet('計分說明'); ws.getColumn(1).width = 110;
+  ['計分方式',
+   '① 重要性權重：每份排序中最重要的一項 5 分、最不重要 1 分；全班（學生每人一份＋家長每人一份）平均後即為該特質權重（1～5）。目前採計：' + { all:'學生＋家長', student:'只採學生', parent:'只採家長' }[weightSource],
+   '② 同學評換算：每位同學在每一項選 ' + PICKS_PER_TRAIT + ' 人；某人得票 ÷ 該項全班最高票 × 5，換成 0～5 分。',
+   '③ 綜合分＝自評×15%＋家長評×10%＋同學評×75%；若某部分未填，就以已填部分按比例計算。',
+   '④ 加權分＝綜合分×權重；10 項加總為總分。',
+   '⑤ 百分制＝總分 ÷（5×10 項權重總和）×100。目前滿分（總分）＝' + round(R.maxPossible) + '。'
+  ].forEach(function(s, i){ var c = ws.getCell(i + 1, 1); c.value = s; c.font = { name:FONT, size:i ? 12 : 16, bold:!i, color:{ argb:i ? 'FF2B2622' : 'FFA61B22' } }; c.alignment = { wrapText:true, vertical:'middle' }; ws.getRow(i + 1).height = i ? 36 : 28; });
+
+  return wb.xlsx.writeBuffer();
+}
+
+/* ===================== 示範資料 ===================== */
+function makeFakeData(){
+  var rows = [], id = 0, now = Date.now();
+  var talent = {}; STUDENTS.forEach(function(s){ talent[s[0]] = {}; TRAITS.forEach(function(t){ talent[s[0]][t.id] = Math.random() * 0.6 + Math.random() * 0.6; }); });
+  var bias = { s1:1.3, s2:1.6, s3:.6, s4:1, s5:1.4, h1:.5, h2:1.2, h3:1.3, h4:1.5, h5:.8 };
+  function fakeRank(){
+    var r = {};
+    ['soft','hard'].forEach(function(g){
+      groupTraits(g).map(function(t){ return [t.id, bias[t.id] + Math.random() * 1.4]; }).sort(function(a, b){ return b[1] - a[1]; })
+        .forEach(function(x, i){ r[x[0]] = 5 - i; });
+    });
+    return r;
+  }
+  function clamp(v){ return Math.max(1, Math.min(5, Math.round(v))); }
+  STUDENTS.forEach(function(s){
+    var seat = s[0];
+    if (Math.random() < .93) { var sc = {}; TRAITS.forEach(function(t){ sc[t.id] = clamp(2 + talent[seat][t.id] * 2.4 + Math.random()); }); rows.push({ role:'self', seat:seat, payload:{ v:1, rank:fakeRank(), scores:sc } }); }
+    if (Math.random() < .75) { var sp = {}; TRAITS.forEach(function(t){ sp[t.id] = clamp(2.5 + talent[seat][t.id] * 2 + Math.random()); }); rows.push({ role:'parent', seat:seat, payload:{ v:1, rank:fakeRank(), scores:sp } }); }
+    if (Math.random() < .96) {
+      var picks = {};
+      TRAITS.forEach(function(t){
+        picks[t.id] = STUDENTS.filter(function(o){ return o[0] !== seat; }).map(function(o){ return [o[0], talent[o[0]][t.id] * 2 + Math.random()]; })
+          .sort(function(a, b){ return b[1] - a[1]; }).slice(0, PICKS_PER_TRAIT).map(function(x){ return x[0]; });
+      });
+      rows.push({ role:'peer', seat:seat, payload:{ v:1, rank:fakeRank(), picks:picks } });
+    }
+  });
+  rows.sort(function(){ return Math.random() - .5; }).forEach(function(r, i){ r.id = ++id; r.created_at = new Date(now - (rows.length - i) * 60000).toISOString(); });
+  lsSet(DEMO_KEY, rows);
+}
+
+/* ===================== 啟動 ===================== */
+$('#title').textContent = CLASS_NAME + ' 模範生遴選';
+$('#subtitle').innerHTML = (IS_ADMIN ? '老師後台' : YEAR_TITLE) + (DEMO ? '<span class="demo-tag">示範模式</span>' : '');
+document.title = CLASS_NAME + ' 模範生遴選' + (IS_ADMIN ? '・後台' : '');
+if (IS_ADMIN) {
+  var saved = null; try { saved = sessionStorage.getItem('mvp_pwd_' + ROOM); } catch (e) {}
+  if (saved) doLogin(saved); else adminLogin();
+} else render();
+</script>
+</body>
+</html>
