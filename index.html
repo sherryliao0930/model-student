@@ -560,7 +560,8 @@ function compute(rows){
     count[r.role][r.seat] = (count[r.role][r.seat] || 0) + 1;
   });
 
-  // 1. 重要性權重：學生（自評或評同學，同一座號取最後一次）＋家長
+  // 1. 重要性權重：學生（自評排序）＋家長排序，先算每項平均，
+  //    再於軟實力、硬技能內各自重新排名次：第 1 名權重 5 … 第 5 名權重 1
   var stuRank = {};
   ['self','peer'].forEach(function(role){ Object.keys(latest[role]).forEach(function(seat){
     var r = latest[role][seat]; if (hasRank(r) && (!stuRank[seat] || stuRank[seat].id < r.id)) stuRank[seat] = r;
@@ -568,11 +569,19 @@ function compute(rows){
   var rankRows = [];
   if (weightSource !== 'parent') Object.keys(stuRank).forEach(function(k){ rankRows.push({ who:'student', r:stuRank[k] }); });
   if (weightSource !== 'student') Object.keys(latest.parent).forEach(function(k){ if (hasRank(latest.parent[k])) rankRows.push({ who:'parent', r:latest.parent[k] }); });
-  var weight = {}, dist = {};
+  var weight = {}, avg = {}, dist = {}, wrank = {};
   TRAITS.forEach(function(t){
     var sum = 0, n = 0; dist[t.id] = [0,0,0,0,0,0];
     rankRows.forEach(function(x){ var v = +((x.r.payload.rank || {})[t.id]); if (v >= 1 && v <= 5) { sum += v; n++; dist[t.id][v]++; } });
-    weight[t.id] = n ? sum / n : 3;
+    avg[t.id] = n ? sum / n : null;
+  });
+  ['soft','hard'].forEach(function(g){
+    // 平均高的排前面；平均相同時，比較誰被排「5分」的人多，再比 4分…；全部相同才依原本順序
+    groupTraits(g).slice().sort(function(a, b){
+      var d = (avg[b.id] || 0) - (avg[a.id] || 0); if (Math.abs(d) > 1e-9) return d;
+      for (var v = 5; v >= 1; v--) if (dist[b.id][v] !== dist[a.id][v]) return dist[b.id][v] - dist[a.id][v];
+      return TRAITS.indexOf(a) - TRAITS.indexOf(b);
+    }).forEach(function(t, i){ wrank[t.id] = i + 1; weight[t.id] = rankRows.length ? 5 - i : 3; });
   });
 
   // 2. 他評票數
@@ -614,7 +623,7 @@ function compute(rows){
   var ranked = people.slice().sort(function(a, b){ return b.total - a.total || a.seat - b.seat; });
   ranked.forEach(function(p, i){ p.rank = i > 0 && Math.abs(p.total - ranked[i-1].total) < 1e-9 ? ranked[i-1].rank : i + 1; });
 
-  return { rows:rows, latest:latest, count:count, weight:weight, dist:dist, rankN:rankRows.length, votes:votes, maxVotes:maxVotes,
+  return { rows:rows, latest:latest, count:count, weight:weight, avg:avg, wrank:wrank, dist:dist, rankN:rankRows.length, votes:votes, maxVotes:maxVotes,
            peerN:peerN, people:people, ranked:ranked, maxPossible:maxPossible,
            n:{ self:Object.keys(latest.self).length, parent:Object.keys(latest.parent).length, peer:peerN } };
 }
@@ -635,11 +644,11 @@ function cfgLeader(n){
       plugins:Object.assign(titleOpt(CLASS_NAME + ' 模範生遴選 總排名', '自評15%・家長10%・同學評75%，再乘以各項重要性權重'), { legend:{ position:'bottom' } }) } };
 }
 function cfgWeight(){
-  var list = TRAITS.slice().sort(function(a, b){ return R.weight[b.id] - R.weight[a.id]; });
-  return { type:'bar', data:{ labels:list.map(function(t){ return t.name; }),
-      datasets:[{ label:'平均重要性（1～5）', data:list.map(function(t){ return round(R.weight[t.id]); }), backgroundColor:list.map(function(t){ return t.g === 'soft' ? C_SOFT : C_HARD; }), borderRadius:4 }] },
-    options:{ indexAxis:'y', maintainAspectRatio:false, scales:{ x:{ min:0, max:5 } },
-      plugins:Object.assign(titleOpt('大家心目中的重要性（加權倍數）', '共 ' + R.rankN + ' 份排序，最重要 5 分、最不重要 1 分；紅＝軟實力、藍＝硬技能'), { legend:{ display:false } }) } };
+  var list = TRAITS.slice().sort(function(a, b){ return (a.g === b.g ? 0 : a.g === 'soft' ? -1 : 1) || R.weight[b.id] - R.weight[a.id]; });
+  return { type:'bar', data:{ labels:list.map(function(t){ return t.name + '（平均 ' + fmt(R.avg[t.id]) + '）'; }),
+      datasets:[{ label:'權重（依名次 5～1）', data:list.map(function(t){ return R.weight[t.id]; }), backgroundColor:list.map(function(t){ return t.g === 'soft' ? C_SOFT : C_HARD; }), borderRadius:4 }] },
+    options:{ indexAxis:'y', maintainAspectRatio:false, scales:{ x:{ min:0, max:5, ticks:{ stepSize:1 } } },
+      plugins:Object.assign(titleOpt('大家心目中的重要性（加權倍數）', '共 ' + R.rankN + ' 份排序；先算平均，再於軟實力、硬技能內各自排名次：第1名權重5…第5名權重1'), { legend:{ display:false } }) } };
 }
 function avgOf(role){
   return TRAITS.map(function(t){
@@ -736,7 +745,7 @@ function drawStudentPage(p){
   TRAITS.forEach(function(t, i){
     var y = ty + rh2 * (i + 1), v = p.t[t.id];
     x.fillStyle = t.g === 'soft' ? (i % 2 ? '#FBF1EF' : '#F6E3E0') : (i % 2 ? '#EEF5F8' : '#DDEBF0'); x.fillRect(tx, y, W - 120, rh2);
-    var vals = [t.name, v.self == null ? '—' : v.self, v.parent == null ? '—' : v.parent, v.votes, fmt(v.peer), fmt(v.comb), fmt(R.weight[t.id]), fmt(v.weighted)];
+    var vals = [t.name, v.self == null ? '—' : v.self, v.parent == null ? '—' : v.parent, v.votes, fmt(v.peer), fmt(v.comb), R.weight[t.id], fmt(v.weighted)];
     cx = tx;
     vals.forEach(function(val, j){
       x.textAlign = j ? 'center' : 'left'; x.font = (j === 7 ? '700 ' : '') + '22px ' + F;
@@ -901,7 +910,7 @@ function renderTab(){
     var p = R.people.filter(function(x){ return x.seat === radarSeat; })[0];
     h = '<div class="card"><h3><span>個人分析　<select id="selSeat">' + STUDENTS.map(function(s){ return '<option value="' + s[0] + '"' + (s[0] === radarSeat ? ' selected' : '') + '>' + stu(s[0]) + '</option>'; }).join('') + '</select></span><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><label style="font-size:13px;font-weight:400;color:var(--ink-2);align-self:center"><input type="checkbox" id="pdfRank"' + (pdfShowRank ? ' checked' : '') + '> PDF 顯示名次</label>' + dlBtn('radar') + '<button class="btn sm" data-a="pdf">⬇ 全班 PDF</button></span></h3>' +
       '<div class="grid2"><div class="chartbox" style="height:440px"><canvas id="cRadar"></canvas></div><div class="xscroll"><table class="t"><thead><tr><th class="l">特質</th><th>自評</th><th>家長</th><th>同學票</th><th>同學換算</th><th>綜合</th><th>權重</th><th>加權分</th></tr></thead><tbody>' +
-      TRAITS.map(function(t){ var v = p.t[t.id]; return '<tr><td class="l" style="color:' + (t.g === 'soft' ? 'var(--soft)' : 'var(--hard)') + '">' + t.name + '</td><td>' + (v.self == null ? '—' : v.self) + '</td><td>' + (v.parent == null ? '—' : v.parent) + '</td><td>' + v.votes + '</td><td>' + fmt(v.peer) + '</td><td>' + fmt(v.comb) + '</td><td>' + fmt(R.weight[t.id]) + '</td><td><b>' + fmt(v.weighted) + '</b></td></tr>'; }).join('') +
+      TRAITS.map(function(t){ var v = p.t[t.id]; return '<tr><td class="l" style="color:' + (t.g === 'soft' ? 'var(--soft)' : 'var(--hard)') + '">' + t.name + '</td><td>' + (v.self == null ? '—' : v.self) + '</td><td>' + (v.parent == null ? '—' : v.parent) + '</td><td>' + v.votes + '</td><td>' + fmt(v.peer) + '</td><td>' + fmt(v.comb) + '</td><td>' + R.weight[t.id] + '</td><td><b>' + fmt(v.weighted) + '</b></td></tr>'; }).join('') +
       '<tr><td class="l"><b>合計</b></td><td colspan="6"></td><td><b>' + fmt(p.total) + '</b></td></tr></tbody></table>' +
       '<p class="note" style="margin-top:8px">第 ' + p.rank + ' 名・百分制 ' + fmt(p.pct, 1) + '・' + ['self','parent','peer'].map(function(r){ return ROLE_NAME[r] + (p.has[r] ? '✓' : '未填'); }).join('・') + '</p></div></div></div>' +
       '<div class="card"><h3>全班自評・家長評・同學評 比較 ' + dlBtn('compare') + '</h3><div class="chartbox" style="height:420px"><canvas id="cCompare"></canvas></div></div>';
@@ -920,8 +929,8 @@ function renderTab(){
     mountChart('cVotes', cfgVotes(votesTrait));
   } else if (tab === 'weight') {
     h = '<div class="card"><h3>重要性權重 ' + dlBtn('weight') + '</h3><div class="chartbox" style="height:420px"><canvas id="cWeight"></canvas></div></div>' +
-      '<div class="card"><h3>排序分布</h3><p class="note">每格為「給這一項打幾分」的人數</p><div class="tscroll"><table class="t"><thead><tr><th class="l">特質</th><th>5分<br>最重要</th><th>4分</th><th>3分</th><th>2分</th><th>1分<br>最不重要</th><th>平均（權重）</th></tr></thead><tbody>' +
-      TRAITS.map(function(t){ var d = R.dist[t.id]; return '<tr><td class="l" style="color:' + (t.g === 'soft' ? 'var(--soft)' : 'var(--hard)') + '">' + t.name + '</td><td>' + d[5] + '</td><td>' + d[4] + '</td><td>' + d[3] + '</td><td>' + d[2] + '</td><td>' + d[1] + '</td><td><b>' + fmt(R.weight[t.id]) + '</b></td></tr>'; }).join('') +
+      '<div class="card"><h3>排序分布</h3><p class="note">每格為「給這一項打幾分」的人數；平均最高的在軟實力（或硬技能）中排第 1 名，權重 5，依序到第 5 名權重 1。</p><div class="tscroll"><table class="t"><thead><tr><th class="l">特質</th><th>5分<br>最重要</th><th>4分</th><th>3分</th><th>2分</th><th>1分<br>最不重要</th><th>平均</th><th>組內名次</th><th>權重</th></tr></thead><tbody>' +
+      TRAITS.map(function(t){ var d = R.dist[t.id]; return '<tr><td class="l" style="color:' + (t.g === 'soft' ? 'var(--soft)' : 'var(--hard)') + '">' + t.name + '</td><td>' + d[5] + '</td><td>' + d[4] + '</td><td>' + d[3] + '</td><td>' + d[2] + '</td><td>' + d[1] + '</td><td>' + fmt(R.avg[t.id]) + '</td><td>第 ' + R.wrank[t.id] + ' 名</td><td><b>' + R.weight[t.id] + '</b></td></tr>'; }).join('') +
       '</tbody></table></div></div>';
     b.innerHTML = h; mountChart('cWeight', cfgWeight());
   } else if (tab === 'progress') {
@@ -936,11 +945,11 @@ function renderTab(){
   } else {
     var link = location.origin + location.pathname + (ROOM !== 'class609-2026' ? '?room=' + encodeURIComponent(ROOM) : '');
     h = '<div class="card"><h3>計分方式</h3><div class="formula">' +
-      '<p><b>① 重要性權重</b>：每份排序中，最重要的一項得 5 分、最不重要得 1 分。全班（學生每人一份＋家長每人一份）平均後，就是該特質的<b>權重</b>（1～5）。</p>' +
+      '<p><b>① 重要性權重</b>：每份排序中，最重要的一項得 5 分、最不重要得 1 分。全班（學生自評時的排序每人一份＋家長每人一份）統計平均後，在軟實力 5 項、硬技能 5 項中<b>各自重新排名次</b>：第 1 名權重 <b>5</b>、第 2 名 4……第 5 名 <b>1</b>。平均相同時，比較被排為 5 分的人數。</p>' +
       '<p><b>② 同學評換算</b>：每位同學在每一項選 3 人。某人在該項的得票 ÷ 該項全班最高票 × 5，換成 0～5 分（最高票者 = 5 分）。</p>' +
       '<p><b>③ 綜合分</b>：<code>自評 × 15% ＋ 家長評 × 10% ＋ 同學評 × 75%</code>。若家長或自評未填，就用已填的部分按比例計算（例如沒有家長評，則為 自評×15/90 ＋ 同學評×75/90）。</p>' +
       '<p><b>④ 加權分</b>：<code>綜合分 × 權重</code>；10 項加總為<b>總分</b>，軟實力 5 項為軟實力分、硬技能 5 項為硬技能分。</p>' +
-      '<p><b>⑤ 百分制</b>：總分 ÷（5 × 10 項權重總和）× 100，方便閱讀。</p></div></div>' +
+      '<p><b>⑤ 百分制</b>：總分 ÷（5 × 10 項權重總和，即 5×30＝150）× 100，方便閱讀。</p></div></div>' +
       '<div class="card"><h3>填寫網址</h3><p class="note">把這個網址（或做成 QR code）給學生與家長：</p><div class="formula" style="word-break:break-all"><b>' + esc(link) + '</b></div>' +
       '<p class="note" style="margin-top:8px">目前班級代碼（room）：' + esc(ROOM) + (DEMO ? '　｜　<b>示範模式：資料只存在這台電腦的瀏覽器</b>' : '') + '</p></div>';
     b.innerHTML = h;
@@ -1045,7 +1054,7 @@ function buildWorkbook(){
   ws = sheet('分項明細', '每位學生每一項的原始分與換算過程', '同學換算 ＝ 得票 ÷ 該項最高票 × 5；綜合 ＝ 已填部分依 15/10/75 比例加權平均', ['座號','姓名','類別','特質','自評','家長評','同學得票','同學換算','綜合分','權重','加權分'], [7,11,10,20,7,8,9,9,9,8,9]);
   R.people.forEach(function(p){ TRAITS.forEach(function(t){
     var v = p.t[t.id];
-    addRow(ws, [p.seat, p.name, GROUP_NAME[t.g].slice(2), t.name, v.self == null ? '' : v.self, v.parent == null ? '' : v.parent, v.votes, num(v.peer), num(v.comb), num(R.weight[t.id]), num(v.weighted)], { left:[4], fill:t.g === 'soft' ? SOFTF : HARDF });
+    addRow(ws, [p.seat, p.name, GROUP_NAME[t.g].slice(2), t.name, v.self == null ? '' : v.self, v.parent == null ? '' : v.parent, v.votes, num(v.peer), num(v.comb), R.weight[t.id], num(v.weighted)], { left:[4], fill:t.g === 'soft' ? SOFTF : HARDF });
   }); });
   ws.autoFilter = { from:'A3', to:'K3' };
 
@@ -1062,8 +1071,8 @@ function buildWorkbook(){
   scale(ws, 'C4:L' + last, 'FFF4B183');
 
   // 7. 重要性權重
-  ws = sheet('重要性權重', '大家心目中各項特質的重要性', '共 ' + R.rankN + ' 份排序；最重要 5 分、最不重要 1 分，平均即為權重', ['類別','特質','5分(最重要)','4分','3分','2分','1分(最不重要)','平均＝權重'], [10,22,12,8,8,8,13,12]);
-  TRAITS.forEach(function(t){ var d = R.dist[t.id]; addRow(ws, [GROUP_NAME[t.g].slice(2), t.name, d[5], d[4], d[3], d[2], d[1], num(R.weight[t.id])], { left:[2], fill:t.g === 'soft' ? SOFTF : HARDF }); });
+  ws = sheet('重要性權重', '大家心目中各項特質的重要性', '共 ' + R.rankN + ' 份排序；最重要 5 分、最不重要 1 分。平均後於軟、硬各自排名次，第1名權重5…第5名權重1', ['類別','特質','5分(最重要)','4分','3分','2分','1分(最不重要)','平均','組內名次','權重'], [10,22,12,8,8,8,13,9,10,8]);
+  TRAITS.forEach(function(t){ var d = R.dist[t.id]; addRow(ws, [GROUP_NAME[t.g].slice(2), t.name, d[5], d[4], d[3], d[2], d[1], num(R.avg[t.id]), '第 ' + R.wrank[t.id] + ' 名', R.weight[t.id]], { left:[2], fill:t.g === 'soft' ? SOFTF : HARDF }); });
   img(ws, chartImage(cfgWeight(), 1000, 560, true), 0, 15, 640, 360);
 
   // 8. 圖表
@@ -1093,7 +1102,7 @@ function buildWorkbook(){
   // 12. 計分說明
   ws = wb.addWorksheet('計分說明'); ws.getColumn(1).width = 110;
   ['計分方式',
-   '① 重要性權重：每份排序中最重要的一項 5 分、最不重要 1 分；全班（學生每人一份＋家長每人一份）平均後即為該特質權重（1～5）。目前採計：' + { all:'學生＋家長', student:'只採學生', parent:'只採家長' }[weightSource],
+   '① 重要性權重：每份排序中最重要的一項 5 分、最不重要 1 分；全班（學生自評排序每人一份＋家長每人一份）平均後，在軟實力、硬技能中各自重新排名次，第1名權重5、第2名4…第5名1。目前採計：' + { all:'學生＋家長', student:'只採學生', parent:'只採家長' }[weightSource],
    '② 同學評換算：每位同學在每一項選 ' + PICKS_PER_TRAIT + ' 人；某人得票 ÷ 該項全班最高票 × 5，換成 0～5 分。',
    '③ 綜合分＝自評×15%＋家長評×10%＋同學評×75%；若某部分未填，就以已填部分按比例計算。',
    '④ 加權分＝綜合分×權重；10 項加總為總分。',
