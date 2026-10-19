@@ -17,6 +17,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer}
 .wrap{max-width:820px;margin:0 auto;padding:18px 16px 120px}
@@ -78,10 +79,10 @@ header.top .sub{color:var(--ink-2);font-size:13px}
 .rt{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
 .rt b{font-size:17px}
 .rt p{margin:2px 0 10px;color:var(--ink-2);font-size:13px}
-.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.scale button{border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:6px 2px;line-height:1.2}
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;container-type:inline-size}
+.scale button{border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:6px 1px;line-height:1.2;min-width:0;overflow:hidden}
 .scale button em{font-style:normal;font-size:20px;font-weight:700;display:block}
-.scale button small{font-size:11px;color:var(--ink-3)}
+.scale button small{display:block;white-space:nowrap;font-size:11px;font-size:min(12px, calc((100cqi - 24px) / 5 / 4.6));letter-spacing:-.02em;color:var(--ink-3)}
 .g-soft .scale button.on{background:var(--soft);border-color:var(--soft);color:#fff}
 .g-hard .scale button.on{background:var(--hard);border-color:var(--hard);color:#fff}
 .scale button.on small{color:rgba(255,255,255,.85)}
@@ -303,7 +304,9 @@ var api = {
 var S = null;   // 目前填寫狀態
 
 function buildSteps(role){
+  // 重要性排序只出現在自評與家長；評同學直接選座號開始
   var st = role === 'parent' ? [{ k:'seat' }, { k:'rank', g:'soft' }, { k:'rank', g:'hard' }]
+         : role === 'peer'   ? [{ k:'seat' }]
                              : [{ k:'rank', g:'soft' }, { k:'rank', g:'hard' }, { k:'seat' }];
   if (role === 'peer') TRAITS.forEach(function(t){ st.push({ k:'pick', t:t.id }); });
   else st.push({ k:'rate', g:'soft' }, { k:'rate', g:'hard' });
@@ -318,8 +321,8 @@ function saveDraft(){ if (S) lsSet(draftKey(S.role), S); }
 
 function startRole(role){
   var d = lsGet(draftKey(role));
-  if (d && d.role === role && d.v === 1) S = d;
-  else S = { v:1, role:role, step:0, seat:null, order:{ soft:[], hard:[] }, scores:{}, picks:{} };
+  if (d && d.role === role && d.v === 2) S = d;
+  else S = { v:2, role:role, step:0, seat:null, order:{ soft:[], hard:[] }, scores:{}, picks:{} };
   S.steps = buildSteps(role);
   if (S.step >= S.steps.length) S.step = 0;
   if (role === 'parent' && parentLock()) S.seat = parentLock();
@@ -352,7 +355,7 @@ function renderHome(){
     '<p>一起找出班上最能展現 <b style="color:var(--soft)">5大軟實力</b> 與 <b style="color:var(--hard)">5大硬技能</b> 的同學！請先選擇你的身分。</p></section>' +
     '<div class="roles">' +
       '<button class="role self" data-role="self"><div class="ic">🙋</div><div><b>我是學生・自評</b><span>排序 → 為自己打 1～5 分</span></div></button>' +
-      '<button class="role peer" data-role="peer"><div class="ic">🤝</div><div><b>我是學生・評同學</b><span>排序 → 每項選 3 位同學</span></div></button>' +
+      '<button class="role peer" data-role="peer"><div class="ic">🤝</div><div><b>我是學生・評同學</b><span>選座號 → 每項選 3 位同學</span></div></button>' +
       '<button class="role parent" data-role="parent"><div class="ic">👨‍👩‍👧</div><div><b>我是家長</b><span>選孩子 → 排序 → 為孩子打分</span></div></button>' +
     '</div>' +
     '<div class="traits-intro"><div class="ti soft"><h3>5大軟實力</h3><ol>' + soft + '</ol></div><div class="ti hard"><h3>5大硬技能</h3><ol>' + hard + '</ol></div></div>' +
@@ -450,7 +453,7 @@ function viewPick(tid){
 function viewReview(){
   var who = S.role === 'parent' ? '孩子' : '我';
   var h = '<section class="panel review"><h2>確認一下再送出</h2><p class="hint">' + who + '：<b>' + esc(stu(S.seat)) + '</b>' + (S.role === 'parent' && parentLock() ? '' : '　<button class="link" data-goto="seat">修改</button>') + '</p>';
-  ['soft','hard'].forEach(function(g){
+  if (S.role !== 'peer') ['soft','hard'].forEach(function(g){
     h += '<h3><span><span class="chip-g ' + g + '">' + GROUP_NAME[g] + '</span>重要性排序</span><button class="link" data-goto="rank:' + g + '">修改</button></h3><div class="rv">' +
       S.order[g].map(function(id, i){ return '<span>' + (i + 1) + '. ' + T[id].name + '</span><span>' + (5 - i) + ' 分</span>'; }).join('') + '</div>';
   });
@@ -478,7 +481,7 @@ function gotoStep(key){
 
 function submit(btn){
   var rank = {};
-  ['soft','hard'].forEach(function(g){ S.order[g].forEach(function(id, i){ rank[id] = 5 - i; }); });
+  if (S.role !== 'peer') ['soft','hard'].forEach(function(g){ S.order[g].forEach(function(id, i){ rank[id] = 5 - i; }); });
   var payload = { v:1, rank:rank };
   if (S.role === 'peer') {
     payload.picks = {};
@@ -492,9 +495,9 @@ function submit(btn){
     var role = S.role, seat = S.seat;
     lsDel(draftKey(role));
     if (role === 'parent') lsSet(LOCK_KEY, seat);
-    // 自評與評同學共用排序：先帶入，下次不必重排
+    // 自評與評同學：座號先帶入，下次不必再選
     var other = role === 'self' ? 'peer' : role === 'peer' ? 'self' : null;
-    if (other && !lsGet(draftKey(other))) lsSet(draftKey(other), { v:1, role:other, step:2, seat:seat, order:S.order, scores:{}, picks:{} });
+    if (other && !lsGet(draftKey(other))) lsSet(draftKey(other), { v:2, role:other, step:0, seat:seat, order:{ soft:[], hard:[] }, scores:{}, picks:{} });
     S = null;
     $('#nav').hidden = true;
     var nextTip = role === 'self' ? '<p>別忘了也要回首頁完成「評同學」喔！</p>' : role === 'peer' ? '<p>如果還沒自評，記得回首頁完成「自評」喔！</p>' : '<p>感謝您撥空參與孩子的成長紀錄。</p>';
@@ -546,6 +549,7 @@ document.addEventListener('click', function(e){
 /* ===================== 後台運算 ===================== */
 var ADMIN_PWD = null, RAW = [], R = null, weightSource = 'all', charts = {};
 
+function hasRank(r){ return !!r && Object.keys((r.payload && r.payload.rank) || {}).length === TRAITS.length; }
 function compute(rows){
   rows = rows.slice().sort(function(a, b){ return a.id - b.id; });
   var latest = { self:{}, peer:{}, parent:{} }, count = { self:{}, peer:{}, parent:{} };
@@ -558,11 +562,11 @@ function compute(rows){
   // 1. 重要性權重：學生（自評或評同學，同一座號取最後一次）＋家長
   var stuRank = {};
   ['self','peer'].forEach(function(role){ Object.keys(latest[role]).forEach(function(seat){
-    var r = latest[role][seat]; if (!stuRank[seat] || stuRank[seat].id < r.id) stuRank[seat] = r;
+    var r = latest[role][seat]; if (hasRank(r) && (!stuRank[seat] || stuRank[seat].id < r.id)) stuRank[seat] = r;
   }); });
   var rankRows = [];
   if (weightSource !== 'parent') Object.keys(stuRank).forEach(function(k){ rankRows.push({ who:'student', r:stuRank[k] }); });
-  if (weightSource !== 'student') Object.keys(latest.parent).forEach(function(k){ rankRows.push({ who:'parent', r:latest.parent[k] }); });
+  if (weightSource !== 'student') Object.keys(latest.parent).forEach(function(k){ if (hasRank(latest.parent[k])) rankRows.push({ who:'parent', r:latest.parent[k] }); });
   var weight = {}, dist = {};
   TRAITS.forEach(function(t){
     var sum = 0, n = 0; dist[t.id] = [0,0,0,0,0,0];
@@ -1081,8 +1085,8 @@ function buildWorkbook(){
   ws = sheet('原始-同學評', '同學評原始資料（每人最後一次）', '', ['投票者座號','投票者','填寫時間'].concat(TRAITS.map(function(t){ return t.name; })), [10,11,20].concat(TRAITS.map(function(){ return 22; })));
   R.people.forEach(function(p){ var r = R.latest.peer[p.seat]; if (!r) return;
     addRow(ws, [p.seat, p.name, new Date(r.created_at).toLocaleString('zh-TW')].concat(TRAITS.map(function(t){ return ((r.payload.picks || {})[t.id] || []).map(function(x){ return NAME[x] || x; }).join('、'); })), { wrap:true }); });
-  ws = sheet('原始-重要性排序', '每份重要性排序（5＝最重要）', '學生的自評與評同學若都有排序，以最後一次為準', ['身分','座號','姓名'].concat(TRAITS.map(function(t){ return t.name; })), [8,7,11].concat(TRAITS.map(function(){ return 11; })));
-  ['self','peer','parent'].forEach(function(role){ R.people.forEach(function(p){ var r = R.latest[role][p.seat]; if (!r) return;
+  ws = sheet('原始-重要性排序', '每份重要性排序（5＝最重要）', '學生的排序來自自評', ['身分','座號','姓名'].concat(TRAITS.map(function(t){ return t.name; })), [8,7,11].concat(TRAITS.map(function(){ return 11; })));
+  ['self','peer','parent'].forEach(function(role){ R.people.forEach(function(p){ var r = R.latest[role][p.seat]; if (!hasRank(r)) return;
     addRow(ws, [ROLE_NAME[role], p.seat, p.name].concat(TRAITS.map(function(t){ return +r.payload.rank[t.id] || ''; }))); }); });
 
   // 12. 計分說明
@@ -1122,7 +1126,7 @@ function makeFakeData(){
         picks[t.id] = STUDENTS.filter(function(o){ return o[0] !== seat; }).map(function(o){ return [o[0], talent[o[0]][t.id] * 2 + Math.random()]; })
           .sort(function(a, b){ return b[1] - a[1]; }).slice(0, PICKS_PER_TRAIT).map(function(x){ return x[0]; });
       });
-      rows.push({ role:'peer', seat:seat, payload:{ v:1, rank:fakeRank(), picks:picks } });
+      rows.push({ role:'peer', seat:seat, payload:{ v:1, rank:{}, picks:picks } });
     }
   });
   rows.sort(function(){ return Math.random() - .5; }).forEach(function(r, i){ r.id = ++id; r.created_at = new Date(now - (rows.length - i) * 60000).toISOString(); });
