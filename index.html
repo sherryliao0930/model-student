@@ -709,7 +709,7 @@ var CHART_EXPORTS = {
 function loadScript(src){
   return new Promise(function(ok, fail){ var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = function(){ fail(new Error('元件載入失敗')); }; document.head.appendChild(s); });
 }
-function drawStudentPage(p){
+function drawStudentPage(p, png){
   var W = 1240, H = 1754, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   var x = cv.getContext('2d'), F = '"Noto Sans TC","Microsoft JhengHei",sans-serif', SF = '"Noto Serif TC","PMingLiU",serif';
   x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, W, H);
@@ -761,9 +761,38 @@ function drawStudentPage(p){
   x.textAlign = 'left'; x.fillStyle = '#8C8178'; x.font = '20px ' + F;
   x.fillText('綜合分＝自評×15%＋家長評×10%＋同學評×75%（同學換算＝得票÷該項最高票×5）；加權分＝綜合分×全班重要性權重。', 60, yt + 100);
   x.fillText('填寫狀況：' + ['self','parent','peer'].map(function(r){ return ROLE_NAME[r] + (p.has[r] ? '✓' : '未填'); }).join('・') + '　｜　產出日期 ' + new Date().toLocaleDateString('zh-TW'), 60, yt + 134);
-  return cv.toDataURL('image/jpeg', 0.85);
+  return png ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg', 0.85);
 }
 var pdfShowRank = true;
+function reportName(p){ return pad(p.seat) + p.name + '_個人報告.png'; }
+// 單人報告圖檔（與 PDF 同一頁面版型）
+function exportReportPNG(){
+  var p = R.people.filter(function(x){ return x.seat === radarSeat; })[0];
+  downloadURL(drawStudentPage(p, true), reportName(p));
+}
+// 全班個人報告圖檔，打包成一個 ZIP
+function dataURLtoBytes(u){ var b = atob(u.split(',')[1]), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+function exportReportZIP(btn){
+  var old = btn.textContent; btn.disabled = true;
+  var ready = window.JSZip ? Promise.resolve() : loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+  ready.then(function(){
+    var zip = new JSZip(), list = R.people.slice(), i = 0;
+    return new Promise(function(done){
+      (function next(){
+        if (i >= list.length) return done(zip);
+        btn.textContent = '產生中 ' + (i + 1) + ' / ' + list.length;
+        zip.file(reportName(list[i]), dataURLtoBytes(drawStudentPage(list[i], true)));
+        i++; setTimeout(next, 0);
+      })();
+    });
+  }).then(function(zip){ btn.textContent = '壓縮中…'; return zip.generateAsync({ type:'blob' }); })
+    .then(function(blob){
+      var url = URL.createObjectURL(blob);
+      downloadURL(url, CLASS_NAME + '_全班個人報告圖檔_' + new Date().toISOString().slice(0, 10) + '.zip');
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    }).catch(function(e){ console.error(e); toast('圖檔產生失敗：' + (e.message || e)); })
+    .then(function(){ btn.disabled = false; btn.textContent = old; });
+}
 function exportRadarPDF(btn){
   var old = btn.textContent; btn.disabled = true;
   var order = R.people.slice();   // 依座號
@@ -908,7 +937,7 @@ function renderTab(){
     b.innerHTML = h; mountChart('cLeader', cfgLeader());
   } else if (tab === 'person') {
     var p = R.people.filter(function(x){ return x.seat === radarSeat; })[0];
-    h = '<div class="card"><h3><span>個人分析　<select id="selSeat">' + STUDENTS.map(function(s){ return '<option value="' + s[0] + '"' + (s[0] === radarSeat ? ' selected' : '') + '>' + stu(s[0]) + '</option>'; }).join('') + '</select></span><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><label style="font-size:13px;font-weight:400;color:var(--ink-2);align-self:center"><input type="checkbox" id="pdfRank"' + (pdfShowRank ? ' checked' : '') + '> PDF 顯示名次</label>' + dlBtn('radar') + '<button class="btn sm" data-a="pdf">⬇ 全班 PDF</button></span></h3>' +
+    h = '<div class="card"><h3><span>個人分析　<select id="selSeat">' + STUDENTS.map(function(s){ return '<option value="' + s[0] + '"' + (s[0] === radarSeat ? ' selected' : '') + '>' + stu(s[0]) + '</option>'; }).join('') + '</select></span><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><label style="font-size:13px;font-weight:400;color:var(--ink-2);align-self:center"><input type="checkbox" id="pdfRank"' + (pdfShowRank ? ' checked' : '') + '> 報告顯示名次</label><button class="btn sm ghost" data-a="png" data-k="radar">⬇ 雷達圖</button>' + '<button class="btn sm gold" data-a="rpt">⬇ 個人報告圖檔</button><button class="btn sm ghost" data-a="rptzip">⬇ 全班圖檔 ZIP</button><button class="btn sm" data-a="pdf">⬇ 全班 PDF</button></span></h3>' +
       '<div class="grid2"><div class="chartbox" style="height:440px"><canvas id="cRadar"></canvas></div><div class="xscroll"><table class="t"><thead><tr><th class="l">特質</th><th>自評</th><th>家長</th><th>同學票</th><th>同學換算</th><th>綜合</th><th>權重</th><th>加權分</th></tr></thead><tbody>' +
       TRAITS.map(function(t){ var v = p.t[t.id]; return '<tr><td class="l" style="color:' + (t.g === 'soft' ? 'var(--soft)' : 'var(--hard)') + '">' + t.name + '</td><td>' + (v.self == null ? '—' : v.self) + '</td><td>' + (v.parent == null ? '—' : v.parent) + '</td><td>' + v.votes + '</td><td>' + fmt(v.peer) + '</td><td>' + fmt(v.comb) + '</td><td>' + R.weight[t.id] + '</td><td><b>' + fmt(v.weighted) + '</b></td></tr>'; }).join('') +
       '<tr><td class="l"><b>合計</b></td><td colspan="6"></td><td><b>' + fmt(p.total) + '</b></td></tr></tbody></table>' +
@@ -963,6 +992,8 @@ document.addEventListener('click', function(e){
   if (d.tab) { tab = d.tab; Object.keys(charts).forEach(function(k){ charts[k].destroy(); }); charts = {}; return renderAdmin(); }
   if (d.a === 'reload') return reload();
   if (d.a === 'png') { if (!R.rows.length) return toast('目前還沒有資料'); var r = CHART_EXPORTS[d.k](); return downloadURL(r[0], r[1]); }
+  if (d.a === 'rpt') { if (!R.rows.length) return toast('目前還沒有資料'); return exportReportPNG(); }
+  if (d.a === 'rptzip') { if (!R.rows.length) return toast('目前還沒有資料'); return exportReportZIP(el); }
   if (d.a === 'pdf') { if (!R.rows.length) return toast('目前還沒有資料'); return exportRadarPDF(el); }
   if (d.a === 'excel') { if (!R.rows.length) return toast('目前還沒有資料'); return exportExcel(el); }
   if (d.a === 'fake') { makeFakeData(); return reload(); }
